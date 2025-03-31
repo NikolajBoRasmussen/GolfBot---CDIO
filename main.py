@@ -36,3 +36,7 @@ def main ():
 
 # Play another beep sound.
     ev3.speaker.beep(frequency=1000, duration=500)
+
+    print("compilede")
+    
+main()
