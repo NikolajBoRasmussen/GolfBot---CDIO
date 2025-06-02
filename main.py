@@ -17,12 +17,14 @@ import cv2
 
 def main():
     #print(cv2.getBuildInformation())
+    #nedenstående funktion tænder kameraet i index 1. Indexet starter på 0, men for mig der er kameraet i index 0 mit kamera i min pc.
     cap = cv2.VideoCapture(1)
     
     while True:
         ret, frame = cap.read()
         cv2.imshow("yolov8", frame)
         
+        #tryk escape for at stoppe programmet
         if(cv2.waitKey(30)==27):
             break
     
