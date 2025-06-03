@@ -6,6 +6,7 @@ import matplotlib.patches as patches
 import pandas as pd
 import cv2
 import argparse
+import supervision as sv
 
 def parse_arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description= "YOLOv8 live")
@@ -28,12 +29,24 @@ def main():
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, frame_width)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, frame_height)
     
-    #model = YOLO("yolo8l.pt")
+    model = YOLO("yolo8n.pt")
     
+    box_annotator = sv.BoxAnnotator(
+        thickness=2,
+        text_thickness=2,
+        text_scale=1
+    )
     
     while True:
         ret, frame = cap.read()
+        
+        result = model(frame)[0]
+        detection = sv.Detections.from_yolov8(result)
+        frame = box_annotator(scene = frame, detections = detection)
+        
+        
         cv2.imshow("yolov8", frame)
+        
         
         print(frame.shape)
         #tryk escape for at stoppe programmet
