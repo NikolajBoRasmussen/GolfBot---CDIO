@@ -29,7 +29,7 @@ def main():
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, frame_width)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, frame_height)
     
-    model = YOLO("yolo8n.pt")
+    model = YOLO("Models/Training 1/weights/best.pt")
     
     box_annotator = sv.BoxAnnotator(
         thickness=2,
@@ -42,7 +42,7 @@ def main():
         
         result = model(frame)[0]
         detection = sv.Detections.from_yolov8(result)
-        frame = box_annotator(scene = frame, detections = detection)
+        frame = box_annotator.annotate(scene = frame, detections = detection)
         
         
         cv2.imshow("yolov8", frame)
