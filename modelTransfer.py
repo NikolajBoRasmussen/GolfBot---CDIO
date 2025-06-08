@@ -26,7 +26,7 @@ model.info()     #kan være brugbar til debugging
 
 
 #Train the model
-model.train(data='GolfBot-8/data.yaml', epochs=25, batch=12, project = "Models", name = "Training 2")
+model.train(data='GolfBot-8/data.yaml', epochs=50, batch=12, project = "Models", name = "Training 2")
 
 # Evaluation of the model
 results = model.val() # Evaluate the model on the validation set
@@ -36,3 +36,4 @@ results1 = model.predict("test.jpg") # Predict on a test image
 
 # Export the model to ONNX format
 model.export(format='onnx')
+model.save("yolov8n.pt")
