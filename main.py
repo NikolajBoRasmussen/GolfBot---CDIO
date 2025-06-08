@@ -12,7 +12,7 @@ def parse_arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description= "YOLOv8 live")
     parser.add_argument(
         "--webcam-resolution",
-        default= [1280 , 720],
+        default= [640 , 640],
         nargs = 2,
         type=int
     )
@@ -29,7 +29,7 @@ def main():
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, frame_width)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, frame_height)
     
-    model = YOLO("Models/Training 12/weights/best.pt")
+    model = YOLO("Models/Training 2/weights/best.onnx")
     
     box_annotator = sv.BoxAnnotator(
         thickness=2,
