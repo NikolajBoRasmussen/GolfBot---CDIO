@@ -46,8 +46,15 @@ def main():
         
         cv2.imshow("yolov8", frame)
         
-        
+        print(detection.class_id)
         print(detection)
+        
+        if (2 in detection.class_id):
+            cv2.imwrite("yolov8.jpg", frame)
+            results1 = model.predict("yolov8.jpg") # Predict on a test image
+            print(results1)
+            print("det virker")
+            break
         #tryk escape for at stoppe programmet
         if(cv2.waitKey(30)==27):
             break
