@@ -6,6 +6,28 @@ import matplotlib.patches as patches
 import pandas as pd
 import argparse
 import supervision as sv
+import os
+import time
+    
+
+def get_orange_ball(results):
+    for result in results:
+        if result.boxes is not None:
+            for box in result.boxes:
+                if box.cls == 2:  # Assuming class ID 2 is for the orange ball
+                    return box.xywh[0].cpu().numpy()  # Return the bounding box coordinates
+    return None
+
+
+def remove_previous_images():
+    file_path = "yolov8.jpg"
+
+    # Check if the file exists before trying to remove it
+    if os.path.exists(file_path):
+        os.remove(file_path)
+        print(f"{file_path} has been removed.")
+    else:
+        print(f"{file_path} does not exist.")
 
 def parse_arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description= "YOLOv8 live")
@@ -18,8 +40,7 @@ def parse_arguments() -> argparse.Namespace:
     args = parser.parse_args()
     return args
 
-def main():
-    args = parse_arguments()
+def config_camera(args: argparse.Namespace):
     frame_width, frame_height = args.webcam_resolution
     
     #print(cv2.getBuildInformation())
@@ -27,8 +48,18 @@ def main():
     cap = cv2.VideoCapture(1)
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, frame_width)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, frame_height)
+    return cap
+
+def main():
+    remove_previous_images()  #fjerner tidligere billeder, så der ikke er forvirring med gamle billeder
+    args = parse_arguments()
+    cap = config_camera(args)
+    if not cap.isOpened():
+        print("Error: Could not open video capture.")
+        return
+
     
-    model = YOLO("Models/Training 24/weights/best.onnx")
+    model = YOLO("Models/Training 24/weights/best.onnx", task="detect")  # Load the trained YOLOv8 model
     
     box_annotator = sv.BoxAnnotator(
         thickness=2,
@@ -39,6 +70,7 @@ def main():
     while True:
         ret, frame = cap.read()
         
+        original_frame = frame.copy()
         result = model(frame)[0]
         detection = sv.Detections.from_yolov8(result)
         frame = box_annotator.annotate(scene = frame, detections = detection)
@@ -47,12 +79,17 @@ def main():
         cv2.imshow("yolov8", frame)
         
         print(detection.class_id)
-        print(detection)
+        #print(detection.xyxy)
+        #print(detection.confidence)
         
         if (2 in detection.class_id):
-            cv2.imwrite("yolov8.jpg", frame)
-            results1 = model.predict("yolov8.jpg") # Predict on a test image
-            print(results1)
+            print("calibrating...")
+            time.sleep(3)
+            cv2.imwrite("yolov8.jpg", original_frame)
+            results1 = model.predict("yolov8.jpg") # Predict on a test image            
+            print(results1[0].boxes.xywh)
+            orange_ball = get_orange_ball(results1)
+            print(orange_ball)
             print("det virker")
             break
         #tryk escape for at stoppe programmet
