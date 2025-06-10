@@ -86,6 +86,7 @@ def main():
             print("calibrating...")
             time.sleep(3)
             cv2.imwrite("yolov8.jpg", original_frame)
+            cv2.imwrite("yolov8test.jpg", frame)
             results1 = model.predict("yolov8.jpg") # Predict on a test image            
             print(results1[0].boxes.xywh)
             orange_ball = get_orange_ball(results1)
