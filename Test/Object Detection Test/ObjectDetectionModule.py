@@ -13,6 +13,7 @@ import time
 import copy
 import glob
 import sys
+import unittest
 
 #Test balls 
 model = YOLO('Models/Training 24/weights/best.onnx', task = "detect")
@@ -20,3 +21,4 @@ model = YOLO('Models/Training 24/weights/best.onnx', task = "detect")
 results1 = model.predict("test.jpg") # Predict on a test image
 
 print(results1)
+
