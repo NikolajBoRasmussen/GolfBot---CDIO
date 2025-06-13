@@ -59,7 +59,7 @@ def main():
         return
 
     
-    model = YOLO("Models/Training 24/weights/best.onnx", task="detect")  # Load the trained YOLOv8 model
+    model = YOLO("Models/New Training 13/weights/best.onnx", task="detect")  # Load the trained YOLOv8 model
     
     box_annotator = sv.BoxAnnotator(
         thickness=2,
