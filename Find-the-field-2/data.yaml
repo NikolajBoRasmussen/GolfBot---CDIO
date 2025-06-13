@@ -1,0 +1,12 @@
+names:
+- corner
+nc: 1
+roboflow:
+  license: CC BY 4.0
+  project: find-the-field
+  url: https://universe.roboflow.com/cdiogolfbot/find-the-field/dataset/2
+  version: 2
+  workspace: cdiogolfbot
+test: ../test/images
+train: ../train/images
+val: ../valid/images
