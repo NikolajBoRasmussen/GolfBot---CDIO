@@ -51,7 +51,7 @@ def config_camera(args: argparse.Namespace):
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, frame_height)
     return cap
 
-def coord_finder():
+def coord_finder(OnlyWhiteBalls):
     remove_previous_images()  #fjerner tidligere billeder, så der ikke er forvirring med gamle billeder
     args = parse_arguments()
     cap = config_camera(args)
@@ -151,7 +151,7 @@ def coord_finder():
                             print("white balls =", white_balls)
 
   
-            print("Den når kun her til")
+            print("Tjekpoint")
             if (cross is not None and egg is not None and robot is not None and orange_ball is not None and white_balls is not None):
                 print("cross = ", cross)
                 print("egg = ", egg)
@@ -160,9 +160,15 @@ def coord_finder():
                 print("white balls = ", white_balls)
                 return cross, robot, egg, orange_ball, white_balls
         
+        if (OnlyWhiteBalls):
+            if (crossFound and eggFound and robotFound and white_balls_found):
+                cv2.imwrite("yolov8cross.jpg", original_frame)
+                cv2.imwrite("yolov8testcross.jpg", frame)
+                results1 = model.predict("yolov8cross.jpg")
+                white_balls = get_white_balls(results1)
+                return white_balls
+        
         #tryk escape for at stoppe programmet
         if(cv2.waitKey(30)==27):
             break
     
-#if __name__ == "__main__":
-#    cord_finder()

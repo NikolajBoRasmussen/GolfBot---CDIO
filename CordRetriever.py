@@ -8,7 +8,10 @@ import TestCameraCapture as tcc
 from TestCameraCapture import coord_finder
 
 def retrieve_coordinates():
-    coords = coord_finder()  # Call the function to get coordinates
+    caught_orange_ball = False  # Initialize the flag for orange ball
+    coords = coord_finder(caught_orange_ball)  # Call the function to get coordinates
+    
+    
 
     if coords:  # Check if cords is not None
         print("Cross:", coords[0])
@@ -19,9 +22,20 @@ def retrieve_coordinates():
         print("White Ball Coordinates:")
         for ball in coords[4]:  # Assuming cords[4] holds multiple white balls
             print(ball)
-        exit
+        caught_orange_ball = True  # Set the flag to True if orange ball is found
+        
+        #kode for navigation her
     else:
         print("Failed to retrieve coordinates.")
+        retrieve_coordinates()
 
+    #hvis den kun skal finde hvide bolde
+    if caught_orange_ball:
+        white_balls = coord_finder(caught_orange_ball)  # Call the function again to find white balls
+        if white_balls:
+            print("White Ball Coordinates:")
+            for ball in white_balls[0]:
+                print(ball)
+                
 if __name__ == "__main__":
     retrieve_coordinates()
