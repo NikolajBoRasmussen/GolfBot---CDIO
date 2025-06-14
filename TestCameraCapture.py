@@ -4,29 +4,10 @@ import argparse
 import supervision as sv
 import os
 import time
-    
-def get_cross(results):
-    for result in results:
-        if result.boxes is not None:
-            for box in result.boxes:
-                if box.cls == 0:
-                    return box.xywh[0].cpu().numpy()
-    return None
 
-def get_robot(results):
-    for result in results:
-        if result.boxes is not None:
-            for box in result.boxes:
-                if box.cls == 3:  # Assuming class ID 1 is for the robot
-                    return box.xywh[0].cpu().numpy()  # Return the bounding box coordinates
-    return None
-
-def get_egg(results):
-    for result in results:
-        if result.boxes is not None:
-            for box in result.boxes:
-                if box.cls == 1:  # Assuming class ID 1 is for the egg
-                    return box.xywh[0].cpu().numpy()  # Return the bounding box coordinates
+def get_objects(box, class_id):
+    if box.cls == class_id:
+        return box.xywh[0].cpu().numpy()
     return None
 
 def get_white_balls(results):
@@ -37,14 +18,6 @@ def get_white_balls(results):
                 if box.cls == 4:  # Assuming class ID 4 is for the white balls
                     white_balls.append(box.xywh[0].cpu().numpy())  # Append the bounding box coordinates
     return white_balls
-
-def get_orange_ball(results):
-    for result in results:
-        if result.boxes is not None:
-            for box in result.boxes:
-                if box.cls == 2:  # Assuming class ID 2 is for the orange ball
-                    return box.xywh[0].cpu().numpy()  # Return the bounding box coordinates
-    return None
 
 
 def remove_previous_images():
@@ -78,13 +51,13 @@ def config_camera(args: argparse.Namespace):
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, frame_height)
     return cap
 
-def main():
+def coord_finder():
     remove_previous_images()  #fjerner tidligere billeder, så der ikke er forvirring med gamle billeder
     args = parse_arguments()
     cap = config_camera(args)
     if not cap.isOpened():
         print("Error: Could not open video capture.")
-        return
+        coord_finder()
 
     
     model = YOLO("Models/New Training 1/weights/best.onnx", task="detect")  # Load the trained YOLOv8 model
@@ -99,6 +72,12 @@ def main():
     eggFound = False
     robotFound = False
     white_balls_found = False
+    orange_ball_found = False
+    cross = None
+    egg = None
+    robot = None
+    orange_ball = None
+    white_balls = None
     
     while True:
         ret, frame = cap.read()
@@ -113,55 +92,77 @@ def main():
         print(detection.class_id)
         #print(detection.xyxy)
         #print(detection.confidence)
-                
-        if(0 in detection.class_id and crossFound != True):
+
+        # Check for specific class IDs and perform actions accordingly
+        if (0 in detection.class_id and crossFound != True):
             time.sleep(3)
             cv2.imwrite("yolov8cross.jpg", original_frame)
             cv2.imwrite("yolov8testcross.jpg", frame)
-            results1 = model.predict("yolov8cross.jpg") # Predict on a test image            
-            cross = get_cross(results1)
+            results1 = model.predict("yolov8cross.jpg") # Predict on a test image
             crossFound = True
-            print("cross = ", cross)
+            print("cross found")
+            if (1 in detection.class_id and eggFound != True):
+                eggFound = True
+                print("egg found")
+                if (3 in detection.class_id and robotFound != True):
+                    robotFound = True
+                    print("robot found")
+                    if (2 in detection.class_id and orange_ball_found != True):
+                        orange_ball_found = True
+                        print("orange ball found")
+                        if (4 in detection.class_id and white_balls_found != True):
+                            white_balls_found = True
+                            print("white balls found")
         
-        if (1 in detection.class_id and eggFound != True and crossFound == True):
-            time.sleep(3)
-            cv2.imwrite("yolov8egg.jpg", original_frame)
-            cv2.imwrite("yolov8testegg.jpg", frame)
-            results1 = model.predict("yolov8egg.jpg") # Predict on a test image
-            egg = get_egg(results1)
-            eggFound = True
-            print("egg = ", egg)
-        
-        if (3 in detection.class_id and robotFound != True and crossFound == True and eggFound == True):
-            time.sleep(3)
-            cv2.imwrite("yolov8robot.jpg", original_frame)
-            cv2.imwrite("yolov8testrobot.jpg", frame)
-            results1 = model.predict("yolov8robot.jpg") # Predict on a test image
-            robot = get_robot(results1)
-            robotFound = True
-            print("robot = ", robot)
-            
-        if (2 in detection.class_id and crossFound == True and eggFound == True and robotFound == True and white_balls_found == True):
+        if(crossFound and eggFound and robotFound and orange_ball_found and white_balls_found):
             time.sleep(3)
             cv2.imwrite("yolov8.jpg", original_frame)
             cv2.imwrite("yolov8test.jpg", frame)
-            results1 = model.predict("yolov8.jpg") # Predict on a test image            
-            print(results1[0].boxes.xywh)
-            orange_ball = get_orange_ball(results1)
-            print(orange_ball)
-            break
+            results1 = model.predict("yolov8.jpg") # Predict on a test image
+            for result in results1:
+                for box in result.boxes:
+                    match box.cls:
+                        case 0:
+                            if cross is not None:
+                                if (cross[3] < get_objects(box, 0)[3] and cross[2] < get_objects(box, 0)[2]):
+                                    cross = get_objects(box, 0)
+                            else:
+                                cross = get_objects(box, 0)
+                            print("cross =", cross)
+                        case 1:
+                            if egg is not None:
+                                if (egg[3] < get_objects(box, 1)[3] and egg[2] < get_objects(box, 1)[2]):
+                                    egg = get_objects(box, 1)
+                            else:
+                                egg = get_objects(box, 1)
+                            print("egg =", egg)
+                        case 2:
+                            orange_ball = get_objects(box, 2)
+                            print("orange ball =", orange_ball)
+                        case 3:
+                            if robot is not None:
+                                if (robot[3] < get_objects(box, 3)[3] and robot[2] < get_objects(box, 3)[2]):
+                                    robot = get_objects(box, 3)
+                            else:
+                                robot = get_objects(box, 3)
+                            print("robot =", robot)
+                        case 4:
+                            white_balls = get_white_balls(results1)
+                            print("white balls =", white_balls)
+
+  
+            print("Den når kun her til")
+            if (cross is not None and egg is not None and robot is not None and orange_ball is not None and white_balls is not None):
+                print("cross = ", cross)
+                print("egg = ", egg)
+                print("robot = ", robot)
+                print("orange ball = ", orange_ball)
+                print("white balls = ", white_balls)
+                return cross, robot, egg, orange_ball, white_balls
         
-        if (4 in detection.class_id and white_balls_found != True and crossFound == True and eggFound == True and robotFound == True):
-            white_balls_found = True
-            time.sleep(3)
-            cv2.imwrite("yolov8whiteballs.jpg", original_frame)
-            cv2.imwrite("yolov8testwhiteballs.jpg", frame)
-            results1 = model.predict("yolov8whiteballs.jpg")
-            white_balls = get_white_balls(results1)
-            print("white balls = ", white_balls)
         #tryk escape for at stoppe programmet
         if(cv2.waitKey(30)==27):
             break
     
-if __name__ == "__main__":
-    main()
+#if __name__ == "__main__":
+#    cord_finder()
