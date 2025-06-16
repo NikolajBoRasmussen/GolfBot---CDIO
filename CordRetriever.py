@@ -4,8 +4,8 @@ import argparse
 import supervision as sv
 import os
 import time
-import TestCameraCapture as tcc
-from TestCameraCapture import coord_finder
+import FindObjects as tcc
+from FindObjects import coord_finder
 from FindField import find_field
 
 def retrieve_coordinates():
@@ -37,7 +37,7 @@ def retrieve_coordinates():
         white_balls = coord_finder(caught_orange_ball)  # Call the function again to find white balls
         if white_balls:
             print("White Ball Coordinates:")
-            for ball in white_balls[4]:
+            for ball in coords[4]:
                 print(ball)
                 
 if __name__ == "__main__":

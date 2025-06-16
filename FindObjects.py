@@ -107,7 +107,7 @@ def coord_finder(OnlyWhiteBalls):
                 if (3 in detection.class_id and robotFound != True):
                     robotFound = True
                     print("robot found")
-                    if (2 in detection.class_id and orange_ball_found != True):
+                    if (2 in detection.class_id and orange_ball_found != True or OnlyWhiteBalls):
                         orange_ball_found = True
                         print("orange ball found")
                         if (4 in detection.class_id and white_balls_found != True):
@@ -171,4 +171,3 @@ def coord_finder(OnlyWhiteBalls):
         #tryk escape for at stoppe programmet
         if(cv2.waitKey(30)==27):
             break
-    
