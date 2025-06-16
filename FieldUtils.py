@@ -16,7 +16,7 @@ def compute_scaling(corners, object):
     obj_x_cm = (object[0] - corners[0][0]) * scale_x  # Distance from left boundary
     obj_y_cm = (object[1] - corners[0][1]) * scale_y  # Distance from top boundary
     
-    if(is_point_inside_polygon())
+    if(is_point_inside_polygon()):
         return [obj_x_cm, obj_y_cm]
     
 
