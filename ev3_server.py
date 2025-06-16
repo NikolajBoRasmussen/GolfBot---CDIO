@@ -46,6 +46,15 @@ def robot_commands(command, angle, speed, distance):
     else:
         print("Unknown command: {}".format(command))
 
+
+#####################################################################
+##                                                                 ##
+##                 NEDENSTÅENDE ER "SERVER KODEN"                  ##
+##                    DETTE SKAL IKKE ÆNDRES                       ##
+##           MEDMINDRE MAN ÆNDRER NAVN PÅ "robot_commands"         ##
+##                                                                 ##
+#####################################################################
+
 # Serveren lytter på kommandoer fra klienter (i dette tilfælde vores computere) og styrer robotten baseret på modtagne kommandoer
 # Koden herfra og ned er simpel, men vigtig for at kunne modatge de forskellige kommandoer.
 def start_server():
@@ -68,6 +77,8 @@ def start_server():
 
                     message = data.decode().strip()
                     print("Received: {}".format(message))
+                    # Her kaldes robot_commands funktionen med den modtagne besked
+                    # Hvis navn på funktionen er ændret, så skal det også ændres her. Juhuuu.
                     robot_commands(message)
 
 
