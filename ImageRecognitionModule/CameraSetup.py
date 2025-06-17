@@ -7,11 +7,14 @@ import time
 
 
 def remove_previous_images(WhoThere):
+    file_path = ""
     
     if WhoThere == "Field":
-        file_path = "Field.jpg"
-    elif WhoThere == "Objects":
-        file_path = "yolov8.jpg"
+        file_path = "ImageRecognitionModule/field.jpg"
+    elif WhoThere == "Objects1":
+        file_path = "ImageRecognitionModule/Aligned-Field-White.jpg"
+    elif WhoThere == "Objects2":
+        file_path = "ImageRecognitionModule/Aligned-Field.jpg"
 
     # Check if the file exists before trying to remove it
     if os.path.exists(file_path):

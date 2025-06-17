@@ -69,8 +69,8 @@ def find_field():
         frame = box_annotator.annotate(scene = frame, detections = detection)
         
         if 0 in detection.class_id:  # Check if the field is detected
-            cv2.imwrite("field.jpg", original_frame)
-            results = model.predict("field.jpg") # Predict on a test image
+            cv2.imwrite("ImageRecognitionModule/field.jpg", original_frame)
+            results = model.predict("ImageRecognitionModule/field.jpg") # Predict on a test image
             corners = get_corners(results)
             if corners:
 

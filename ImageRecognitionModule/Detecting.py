@@ -9,9 +9,31 @@ from CameraSetup import remove_previous_images, parse_arguments, config_camera
 from ObjectGetter import get_objects, get_white_balls
 from ResizeImage import crop_rotate_warp
 
+def convert_object_to_xy(cross, egg, robot, orange_ball, image_width, image_height):
+    # Compute scale factors
+    scale_x = 169 / image_width
+    scale_y = 124.5 / image_height
+
+    # Convert the object coordinates to real-world centimeter values
+    cross = [cross[0] * scale_x, cross[1] * scale_y]
+    egg = [egg[0] * scale_x, egg[1] * scale_y]
+    robot = [robot[0] * scale_x, robot[1] * scale_y]
+    orange_ball = [orange_ball[0] * scale_x, orange_ball[1] * scale_y]
+
+    return cross, egg, robot, orange_ball
+
+def convert_white_balls_to_xy(white_balls, image_width, image_height):
+    # Compute scale factors
+    scale_x = 169 / image_width
+    scale_y = 124.5 / image_height
+
+    # Convert white ball coordinates to real-world centimeter values
+    white_balls = [[ball[0] * scale_x, ball[1] * scale_y] for ball in white_balls]
+
+    return white_balls
 
 def coord_finder(OnlyWhiteBalls):
-    Sender = "Objects"
+    Sender = "Objects1" if OnlyWhiteBalls else "Objects2"
     remove_previous_images(Sender)  #fjerner tidligere billeder, så der ikke er forvirring med gamle billeder
     args = parse_arguments()
     cap = config_camera(args)
@@ -45,18 +67,12 @@ def coord_finder(OnlyWhiteBalls):
         original_frame = frame.copy()
         result = ObjectModel(frame)[0]
         detection = sv.Detections.from_yolov8(result)
-        frame = box_annotator.annotate(scene = frame, detections = detection)
-                
+        frame = box_annotator.annotate(scene = frame, detections = detection)                
         print(detection.class_id)
-        #print(detection.xyxy)
-        #print(detection.confidence)
 
         # Check for specific class IDs and perform actions accordingly
         if (0 in detection.class_id and crossFound != True):
             time.sleep(3)
-            corners = find_field()
-            Image = crop_rotate_warp(original_frame, corners)
-            cv2.imwrite("ImageRecognitionModule/Aligned-Field.jpg", Image)
             crossFound = True
             print("cross found")
             if (1 in detection.class_id and eggFound != True):
@@ -105,15 +121,17 @@ def coord_finder(OnlyWhiteBalls):
                             white_balls = get_white_balls(objects)
 
   
-            print("Tjekpoint")
             if (cross is not None and egg is not None and robot is not None and orange_ball is not None and white_balls is not None):
-                print("cross = ", cross)
-                print("egg = ", egg)
-                print("robot = ", robot)
-                print("orange ball = ", orange_ball)
-                print("white balls = ", white_balls)
                 cap.release()  # Release the video capture
-                cv2.destroyAllWindows()  # Close OpenCV windows 
+                cv2.destroyAllWindows()  # Close OpenCV windows
+                width, height = Image.shape[1], Image.shape[0]
+                cross, egg, robot, orange_ball = convert_object_to_xy(cross, egg, robot, orange_ball, width, height)
+                print("Cross:", cross)
+                print("Robot:", robot)
+                print("Egg:", egg)
+                print("Orange Ball:", orange_ball)
+                white_balls = convert_white_balls_to_xy(white_balls, width, height)
+                print("White Balls:", white_balls)
                 return cross, robot, egg, orange_ball, white_balls
             else:
                 print("Failed to find all objects. Retrying...")
@@ -129,7 +147,11 @@ def coord_finder(OnlyWhiteBalls):
                 results1 = ObjectModel.predict("ImageRecognitionModule/Aligned-Field-White.jpg")
                 white_balls = get_white_balls(results1)
                 cap.release()  # Release the video capture
-                cv2.destroyAllWindows()  # Close OpenCV windows 
+                cv2.destroyAllWindows()  # Close OpenCV windows
+                width, height = WhiteImage.shape[1], WhiteImage.shape[0]
+
+                white_balls = convert_white_balls_to_xy(white_balls, width, height)
+                print("White Balls:", white_balls) 
                 return white_balls
         
         #tryk escape for at stoppe programmet
