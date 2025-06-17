@@ -15,10 +15,10 @@ def convert_object_to_xy(cross, egg, robot, orange_ball, image_width, image_heig
     scale_y = 124.5 / image_height
 
     # Convert the object coordinates to real-world centimeter values
-    cross = [cross[0] * scale_x, cross[1] * scale_y]
-    egg = [egg[0] * scale_x, egg[1] * scale_y]
+    cross = [(cross[0] * scale_x)+1, (cross[1] * scale_y)-1]
+    egg = [(egg[0] * scale_x)+1, (egg[1] * scale_y)-1]
     robot = [robot[0] * scale_x, robot[1] * scale_y]
-    orange_ball = [orange_ball[0] * scale_x, orange_ball[1] * scale_y]
+    orange_ball = [(orange_ball[0] * scale_x)+1, (orange_ball[1] * scale_y)-1]
 
     return cross, egg, robot, orange_ball
 
@@ -28,7 +28,7 @@ def convert_white_balls_to_xy(white_balls, image_width, image_height):
     scale_y = 124.5 / image_height
 
     # Convert white ball coordinates to real-world centimeter values
-    white_balls = [[ball[0] * scale_x, ball[1] * scale_y] for ball in white_balls]
+    white_balls = [[(ball[0] * scale_x)-1, (ball[1] * scale_y)-1] for ball in white_balls]
 
     return white_balls
 
