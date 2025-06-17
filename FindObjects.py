@@ -114,7 +114,7 @@ def coord_finder(OnlyWhiteBalls):
                             white_balls_found = True
                             print("white balls found")
         
-        if(crossFound and eggFound and robotFound and orange_ball_found and white_balls_found):
+        if(crossFound and eggFound and robotFound and orange_ball_found and white_balls_found and not OnlyWhiteBalls):
             time.sleep(3)
             cv2.imwrite("yolov8.jpg", original_frame)
             cv2.imwrite("yolov8test.jpg", frame)
