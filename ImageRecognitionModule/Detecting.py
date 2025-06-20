@@ -4,10 +4,10 @@ import argparse
 import supervision as sv
 import os
 import time
-from FieldDetector import find_field
-from CameraSetup import remove_previous_images, parse_arguments, config_camera
-from ObjectGetter import get_objects, get_white_balls
-from ResizeImage import crop_rotate_warp
+from .FieldDetector import find_field
+from .CameraSetup import remove_previous_images, parse_arguments, config_camera
+from .ObjectGetter import get_objects, get_white_balls
+from .ResizeImage import crop_rotate_warp
 
 def convert_object_to_xy(cross, egg, robot, orange_ball, image_width, image_height):
     # Compute scale factors
@@ -46,9 +46,12 @@ def coord_finder(OnlyWhiteBalls):
     
     box_annotator = sv.BoxAnnotator(
         thickness=2,
-        text_thickness=2,
+       # text_thickness=2,
         text_scale=1
     )
+
+
+    
     
     crossFound = False
     eggFound = False

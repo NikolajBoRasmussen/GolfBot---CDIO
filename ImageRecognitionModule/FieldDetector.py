@@ -5,7 +5,7 @@ import supervision as sv
 import os
 import time
 import numpy as np
-from CameraSetup import remove_previous_images, parse_arguments, config_camera
+from .CameraSetup import remove_previous_images, parse_arguments, config_camera
 
 
 def is_point_inside_polygon(corners, point):
