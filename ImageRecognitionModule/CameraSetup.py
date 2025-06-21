@@ -1,9 +1,6 @@
-from ultralytics import YOLO
 import cv2
 import argparse
-import supervision as sv
 import os
-import time
 
 
 def remove_previous_images(WhoThere):
