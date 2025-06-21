@@ -8,13 +8,10 @@ det lille mål er indtil videre hele punkt (17,5) og (17,6).  Overvej at gøre g
 INDEX_0 = 1
 
 # Grid
-GRID_SIZE = 10  # cm
-GRID_WIDTH = 17  # 180 cm / 10 cm
-GRID_HEIGHT = 12 
-
+GRID_SIZE = 1  # cm
 # Bane
-FIELD_WIDTH = 170  # cm 
-FIELD_HEIGHT = 120  # cm
+GRID_WIDTH = 170
+GRID_HEIGHT = 124
 
 # Robot
 ROBOT_WIDTH = 150 ##mm
@@ -24,7 +21,7 @@ AXLE_TRACK = 120 #90 ##mm
 ARM_REACH = 6
 
 # Afstande
-STOP_DISTANCE_FROM_BALL = 3
+STOP_DISTANCE_FROM_BALL = 7
 STOP_DISTANCE_FROM_GOAL = 10
 DELIVERY_ANGLE_TOLERANCE = 5  # grader
 POSITIONING_TOLERANCE = 2     # cm
@@ -33,8 +30,9 @@ POSITIONING_TOLERANCE = 2     # cm
 #ROBOT_START_POS = (10//GRID_SIZE, 10//GRID_SIZE) # GRID (1,1)
 ROBOT_START_POS = (10, 10) # GRID (1,1)
 #ROBOT_START_POS = ((0 + 10) / GRID_SIZE, ((60) / GRID_SIZE) - INDEX_0)
-SAFEPOINT_BIG = (10/GRID_SIZE, ((FIELD_HEIGHT/2)/GRID_SIZE)-INDEX_0)
-SAFEPOINT_SMALL = (150/GRID_SIZE, ((FIELD_HEIGHT/2)/GRID_SIZE)-INDEX_0)
+
+SAFEPOINT_BIG = (0 + STOP_DISTANCE_FROM_GOAL, GRID_HEIGHT/2)
+SAFEPOINT_SMALL = (GRID_WIDTH - STOP_DISTANCE_FROM_GOAL, GRID_HEIGHT/2 )
 SAFEPOINTS = [
     SAFEPOINT_BIG,
     SAFEPOINT_SMALL
@@ -43,6 +41,20 @@ SAFEPOINTS = [
 
 START_POS_CM = (1, 5) ##mm
 #START_POS_CM = ((0 + 10) / GRID_SIZE, ((60) / GRID_SIZE) - INDEX_0)  # nu i cm
+
+# Hvor mange celler bred og høj er selve forhindringen?
+OBSTACLE_WIDTH  = 20
+OBSTACLE_HEIGHT = 20
+
+# Hvor mange celler skal du “inflate” forhindringen med?
+OBSTACLE_MARGIN_CELLS = 5
+
+# Hvor bred skal kanten være (i celler)
+BORDER_MARGIN_CELLS   = 5
+
+DRIVE_BACK_FROM_BALL = 5
+DRIVE_TO_BALL = 8
+
 
 """
 fra bagenden til midten af hjul: 12cm

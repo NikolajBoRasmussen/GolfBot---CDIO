@@ -4,7 +4,7 @@ import argparse
 import supervision as sv
 import os
 import time
-from .Detecting import coord_finder
+from ImageRecognitionModule.Detecting import coord_finder
 
 def retrieve_coordinates():
     caught_orange_ball = False  # Initialize the flag for orange ball

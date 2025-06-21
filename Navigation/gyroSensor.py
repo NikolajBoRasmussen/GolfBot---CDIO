@@ -1,15 +1,3 @@
-# from ev3dev2.sensor.lego import GyroSensor #Henter gyrosensoren
-
-# gyro_sensor = GyroSensor() #Definer gyrosensoren
-
-# gyro_sensor.calibrate()  # Kalibrerer gyrosensoren - Dvs starter i 0 grader
-
-# print(gyro_sensor.angle)  # Udskriver gyrosensorens vinkel
-
-
-# heading_control.py
-
-# heading_control.py
 
 import time
 from ev3dev2.sensor.lego import GyroSensor
@@ -30,7 +18,6 @@ def face_angle(robot, gyro,
         speed = max(min(speed, 100), -100)
         robot.on(SpeedPercent(speed), SpeedPercent(-speed))
         time.sleep(0.01)
-    print("gyro.angle ", gyro.angle)
 
 
 def face_opposite(robot, gyro,
@@ -44,9 +31,7 @@ def turn_and_report(robot: MoveTank, gyro,
                     angle: float,
                     tolerance: float = 1.0,
                     kp: float = 0.8):
-    """
-    Drej robotten angle grader, og udskriv til sidst, hvor meget den rent faktisk drejede.
-    """
+
     start = gyro.angle
     face_angle(robot, angle, tolerance, kp)
     end = gyro.angle

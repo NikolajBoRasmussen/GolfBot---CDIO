@@ -24,35 +24,33 @@ TOLERANCE = 5  # i grader
 #         print("DEBUG: Arm er allerede oppe")
 
 def take_arm_down(arm_motor, speed_pct: int = 30):
-    print("DEBUG: take_arm_down() kaldt")
     arm_motor.on_for_degrees(
         SpeedPercent(speed_pct),
         -ARM_TRAVEL_DEGREES,
         brake=True,
         block=True
     )
-    print("DEBUG: take_arm_down() færdig")
 
 def take_arm_up(arm_motor, speed_pct: int = 30):
-    print("DEBUG: take_arm_up() kaldt")
+
     arm_motor.on_for_degrees(
         SpeedPercent(speed_pct),
         ARM_TRAVEL_DEGREES,
         brake=True,
         block=True
     )
-    print("DEBUG: take_arm_up() færdig")
 
 
-def go_back_3cm(robot, gyro):
+
+def go_back_fixedcm(robot, gyro, dist):
     #drive_straight(robot, gyro, -10, base_speed_percent= 50)
-    forward_cm(robot, -3)    # kører 3 cm baglæns
+    forward_cm(robot, -dist)    # kører 3 cm baglæns
 
 
 # 3) Kør 3 cm frem
 
-def go_forward_3cm(robot, gyro):
-    drive_straight(robot, gyro, 10, base_speed_percent= 50)
+def go_forward_fixedcm(robot, gyro, dist):
+    drive_straight(robot, gyro, dist, base_speed_percent= 50)
 
 
 def play_happy_sound():

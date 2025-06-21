@@ -15,7 +15,7 @@ def turn(robot, angle: float, gyro,
          tolerance: float = 0.5,
          kp: float = 0.7):
 
-    print("herinde: TURN")
+
     start = gyro.angle
     target = start + angle
 
@@ -26,14 +26,14 @@ def turn(robot, angle: float, gyro,
         brake=False,   # coasting mindsker overshoot
         block=True
     )
-    print("herinde: TURN2")
+
 
     face_angle(robot, gyro,
                target_angle=target,
                tolerance=tolerance,
                kp=kp)
 
-    print("herinde: TURN3")
+
     # 4) Rapportér resultat
     end = gyro.angle
     actual = end - start

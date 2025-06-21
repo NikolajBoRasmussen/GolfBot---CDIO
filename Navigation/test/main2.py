@@ -8,7 +8,7 @@ from pathfinding import astar
 from navigation import turn, forward_cm
 from helperfunctions import compress_path, goalCellChecked
 from gyroSensor import face_angle, face_opposite, turn_and_report
-from robotActions import go_back_3cm, go_forward_3cm, play_happy_sound, play_melody, play_text, take_arm_down, take_arm_up    
+from robotActions import go_back_fixedcm, go_forward_fixedcm, play_happy_sound, play_melody, play_text, take_arm_down, take_arm_up    
 
 from ev3dev2.motor import LargeMotor, OUTPUT_A, OUTPUT_B  # Tacho-motorer og portkonstanter :contentReference[oaicite:0]{index=0}
 from ev3dev2.wheel import EV3EducationSetTire            # Standard-hjul for Education Set :contentReference[oaicite:1]{index=1}
