@@ -10,12 +10,10 @@ from .safepoint import nearest_safepoint
 
 def plan_path(grid, start, goal):
     path = astar(grid, start, goal)
-    if not path:
-        raise RuntimeError("Ingen sti fundet ")
-    return path
+    return path  # enten en liste eller None
 
 
-def execute_path(robot, path, gyro, initial_angle=0.0, apply_early_stop=True):
+def execute_path(robot, path, gyro, initial_angle=0.0, apply_early_stop=False):
     current_angle = initial_angle
 
     segments = compress_path(path)
@@ -27,6 +25,7 @@ def execute_path(robot, path, gyro, initial_angle=0.0, apply_early_stop=True):
         current_angle = target_angle
 
         dist = count * GRID_SIZE
+        print("dist før: ", dist)
         if apply_early_stop and i == len(segments) - 1:
             dist = max(dist - STOP_DISTANCE_FROM_BALL, 0)
             print("DIST: ", dist)
@@ -34,33 +33,32 @@ def execute_path(robot, path, gyro, initial_angle=0.0, apply_early_stop=True):
         
     return current_angle
 
-
 def rute(grid, robot_cell, ball_cell):
-
-    print("VIRKER 6, rute")
-    # Path fra robot til bold
+    # 1) Fra robot til bold
     path1 = plan_path(grid, robot_cell, ball_cell)
+    if path1 is None:
+        print("ADVARSEL: Ingen sti fra", robot_cell, "til", ball_cell)
+        return None, None, None
 
-    # Find safepoint‐celle ud fra bold‐cellen
+    # 2) Fra bold til safepoint
     sp_cell = nearest_safepoint(ball_cell)
-
-    # Path fra bold til safepoint
     path2 = plan_path(grid, ball_cell, sp_cell)
+    if path2 is None:
+        print("ADVARSEL: Ingen sti fra", ball_cell, "til", sp_cell)
+        return None, None, None
 
-    # Path fra safepoint tilbage til robot‐start
-    path3 = plan_path(grid, sp_cell, robot_cell)
+    # # 3) Fra safepoint tilbage til robot-start
+    # path3 = plan_path(grid, sp_cell, robot_cell)
+    # if path3 is None:
+    #     print("ADVARSEL: Ingen sti fra", sp_cell, "til", robot_cell)
+    #     return None, None, None
 
-    # (valgfri debug-print)
-    print("robot_cell:", robot_cell, 
-          "ball_cell:", ball_cell, 
-          "sp_cell:", sp_cell)
+    # Debug-print af alle tre
+    print("robot_cell:", robot_cell, "ball_cell:", ball_cell, "sp_cell:", sp_cell)
     print("plan1:", path1)
     print("plan2:", path2)
-    print("plan3:", path3)
+    #print("plan3:", path3)
 
-    return path1, path2, path3
-
-    
-
+    return path1, path2
 
     

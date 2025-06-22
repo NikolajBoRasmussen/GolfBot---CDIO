@@ -17,7 +17,7 @@ def goalCellChecked(grid, raw_goal):
     # Returnér original, hvis den er fri
     return raw_goal
   
-def compress_path(path):
+def     compress_path(path):
 
     if len(path) < 2:
         return []

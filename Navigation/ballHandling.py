@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import time
-from .config import DRIVE_BACK_FROM_BALL, DRIVE_TO_BALL, SAFEPOINT_BIG, SAFEPOINT_SMALL, STOP_DISTANCE_FROM_BALL
+from .config import ANGLE_TOLERANCE, DRIVE_BACK_FROM_BALL, DRIVE_TO_BALL, SAFEPOINT_BIG, SAFEPOINT_SMALL, STOP_DISTANCE_FROM_BALL
 from .gyroSensor import face_angle, face_opposite
 from .infraredSensor import isBallVeryClose
 from .navigation import drive_straight, lower_arm, raise_arm, turn
@@ -12,11 +12,12 @@ def captureBall(robot, arm_motor, infrared, gyro):
     time.sleep(2)
     if isBallVeryClose(infrared):
        take_arm_down(arm_motor)
+       time.sleep(0.5)
        go_forward_fixedcm(robot, gyro, STOP_DISTANCE_FROM_BALL)
        return True
 
     applied_angle = 0
-    for angle in (10, -20, 10):
+    for angle in (ANGLE_TOLERANCE, -2*ANGLE_TOLERANCE, ANGLE_TOLERANCE):
         turn(robot, angle, gyro)        # relativ drejning
         applied_angle += angle          # akkumuler
         time.sleep(1)
@@ -25,9 +26,11 @@ def captureBall(robot, arm_motor, infrared, gyro):
             turn(robot, -applied_angle, gyro)
             play_text("Yes")
             take_arm_down(arm_motor)
+            go_forward_fixedcm(robot, gyro, STOP_DISTANCE_FROM_BALL)
             return True
 
     turn(robot, -applied_angle, gyro)
+    go_forward_fixedcm(robot, gyro, STOP_DISTANCE_FROM_BALL)
     # play_text("No ball")
     return False
 

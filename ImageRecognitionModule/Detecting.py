@@ -4,8 +4,8 @@ import supervision as sv
 import time
 from ImageRecognitionModule.FieldDetector import find_field
 from ImageRecognitionModule.CameraSetup import remove_previous_images, parse_arguments, config_camera
-from ImageRecognitionModule.ObjectGetter import get_objects, get_white_balls
 from ImageRecognitionModule.ResizeImage import crop_rotate_warp
+from ImageRecognitionModule.ObjectSetter import set_objects
 
 def convert_object_to_xy(cross, egg, robot, orange_ball, image_width, image_height):
     # Compute scale factors
@@ -15,7 +15,7 @@ def convert_object_to_xy(cross, egg, robot, orange_ball, image_width, image_heig
     # Convert the object coordinates to real-world centimeter values
     cross = [(cross[0] * scale_x)+1, (cross[1] * scale_y)-1]
     egg = [(egg[0] * scale_x)+1, (egg[1] * scale_y)-1]
-    robot = [robot[0] * scale_x, robot[1] * scale_y]
+    robot = [(robot[0] * scale_x)+2, (robot[1] * scale_y)+1]
     if(orange_ball is not None):
         # Ensure orange_ball is not None before accessing its elements
         orange_ball = [(orange_ball[0] * scale_x)+1, (orange_ball[1] * scale_y)-1]

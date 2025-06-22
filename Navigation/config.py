@@ -10,8 +10,8 @@ INDEX_0 = 1
 # Grid
 GRID_SIZE = 1  # cm
 # Bane
-GRID_WIDTH = 170
-GRID_HEIGHT = 124
+GRID_WIDTH = 168
+GRID_HEIGHT = 122
 
 # Robot
 ROBOT_WIDTH = 150 ##mm
@@ -21,9 +21,10 @@ AXLE_TRACK = 120 #90 ##mm
 ARM_REACH = 6
 
 # Afstande
-STOP_DISTANCE_FROM_BALL = 7
-STOP_DISTANCE_FROM_GOAL = 10
+STOP_DISTANCE_FROM_BALL = 10
+STOP_DISTANCE_FROM_GOAL = 20
 DELIVERY_ANGLE_TOLERANCE = 5  # grader
+ANGLE_TOLERANCE = 15
 POSITIONING_TOLERANCE = 2     # cm
 
 #Positions
@@ -42,18 +43,19 @@ SAFEPOINTS = [
 START_POS_CM = (1, 5) ##mm
 #START_POS_CM = ((0 + 10) / GRID_SIZE, ((60) / GRID_SIZE) - INDEX_0)  # nu i cm
 
-# Hvor mange celler bred og høj er selve forhindringen?
-OBSTACLE_WIDTH  = 20
-OBSTACLE_HEIGHT = 20
 
 # Hvor mange celler skal du “inflate” forhindringen med?
-OBSTACLE_MARGIN_CELLS = 5
+OBSTACLE_MARGIN_CELLS = 14
 
 # Hvor bred skal kanten være (i celler)
-BORDER_MARGIN_CELLS   = 5
+BORDER_MARGIN_CELLS   = 10
 
 DRIVE_BACK_FROM_BALL = 5
 DRIVE_TO_BALL = 8
+
+# Hvor mange celler bred og høj er selve forhindringen?
+OBSTACLE_WIDTH  = 20 + 2*OBSTACLE_MARGIN_CELLS 
+OBSTACLE_HEIGHT = 20 + 2*OBSTACLE_MARGIN_CELLS 
 
 
 """

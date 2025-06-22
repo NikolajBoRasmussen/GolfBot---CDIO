@@ -14,61 +14,167 @@ def to_int_cm(pt):
     x, y = pt
     return int(round(float(x))), int(round(float(y)))
 
-
 def main():
-  
-    # 1) Opsæt EV3-klient
-    EV3_IP = "172.20.10.14"
-    ev3 = EV3Controller(EV3_IP)
-
+    EV3_IP = "172.20.10.10"
     caught_orange = False  # Husk om den orange bold allerede er hentet
 
-            # 5) Udtræk koordinater (orange vs. hvide bolde)
+    # 1) Find alle koordinater (én gang)
     coords = coord_finder(caught_orange)
     if not coords:
         print("Ingen koordinater fundet, afslutter.")
-    
+        return
 
-    print("Robot:", coords[1])
-    cross = coords[0]
-    robot = coords[1]
-    orange_ball = coords[3]
-    white_balls = coords[4]
+    cross      = coords[0]
+    robot_pos  = coords[1]
+    orange_ball= coords[3]
+    white_balls= coords[4]
 
+    # 2) Konverter til grid‐celler
     cross_q   = to_int_cm(cross)
-    robot_q   = to_int_cm(robot)
+    robot_q   = to_int_cm(robot_pos)
     white_qs  = [to_int_cm(pt) for pt in white_balls]
     orange_q  = to_int_cm(orange_ball) if orange_ball is not None else None
 
-    tasks = []
-    tasks.append({"name": "cross", "x": cross_q[0], "y": cross_q[1]})
-    tasks.append({"name": "robot", "x": robot_q[0], "y": robot_q[1]})
-
-    # orange hvis vi har en
+    # 3) Byg task‐liste
+    tasks = [
+        {"name": "cross",  "x": cross_q[0],  "y": cross_q[1]},
+        {"name": "robot",  "x": robot_q[0],  "y": robot_q[1]},
+    ]
     if orange_q is not None:
         tasks.append({"name": "orange", "x": orange_q[0], "y": orange_q[1]})
-
-
-    white_list = [
-        {"name": "white", "x": x, "y": y}
-        for x, y in white_qs
-    ]
-    tasks.append(white_list)
+    tasks.append([{"name": "white", "x": x, "y": y} for x, y in white_qs])
 
     print("Gitter-koordinater og objekter:", tasks)
-    ev3.send(json.dumps({"coords": tasks}))
 
+    # 4) Opret EV3-forbindelse
+    ev3 = EV3Controller(EV3_IP)
+
+    # 5) Send og modtag ACK (blokerer indtil EV3-serveren sender “done”)
+    ev3.send(json.dumps({"coords": tasks}))
     ack = ev3.recv()
     print("EV3 svarede:", ack)
+    ev3.close()
 
-    # 9) Opdater state, når orange bold er hentet
-    if not caught_orange:
+    # 6) Opdater state
+    if not caught_orange and orange_ball is not None:
         caught_orange = True
 
-    # 10) Stop, hvis ingen hvide bolde tilbage
     if caught_orange and not white_balls:
         print("Alle hvide bolde samlet ind – færdig.")
-        exit
 
 if __name__ == "__main__":
     main()
+
+
+
+# def main():
+  
+#     # 1) Opsæt EV3-klient
+#     EV3_IP = "172.20.10.14"
+#     ev3 = EV3Controller(EV3_IP)
+
+#     caught_orange = False  # Husk om den orange bold allerede er hentet
+
+#             # 5) Udtræk koordinater (orange vs. hvide bolde)
+#     coords = coord_finder(caught_orange)
+#     if not coords:
+#         print("Ingen koordinater fundet, afslutter.")
+    
+
+#     print("Robot:", coords[1])
+#     cross = coords[0]
+#     robot = coords[1]
+#     orange_ball = coords[3]
+#     white_balls = coords[4]
+
+#     cross_q   = to_int_cm(cross)
+#     robot_q   = to_int_cm(robot)
+#     white_qs  = [to_int_cm(pt) for pt in white_balls]
+#     orange_q  = to_int_cm(orange_ball) if orange_ball is not None else None
+
+#     tasks = []
+#     tasks.append({"name": "cross", "x": cross_q[0], "y": cross_q[1]})
+#     tasks.append({"name": "robot", "x": robot_q[0], "y": robot_q[1]})
+
+#     # orange hvis vi har en
+#     if orange_q is not None:
+#         tasks.append({"name": "orange", "x": orange_q[0], "y": orange_q[1]})
+
+
+#     white_list = [
+#         {"name": "white", "x": x, "y": y}
+#         for x, y in white_qs
+#     ]
+#     tasks.append(white_list)
+
+#     print("Gitter-koordinater og objekter:", tasks)
+#     ev3.send(json.dumps({"coords": tasks}))
+
+#     ack = ev3.recv()
+#     print("EV3 svarede:", ack)
+
+#     # 9) Opdater state, når orange bold er hentet
+#     if not caught_orange:
+#         caught_orange = True
+
+#     # 10) Stop, hvis ingen hvide bolde tilbage
+#     if caught_orange and not white_balls:
+#         print("Alle hvide bolde samlet ind – færdig.")
+#         exit
+
+
+## Med loop
+# def main():
+#     EV3_IP = "172.20.10.1"
+#     caught_orange = False  # Husk om den orange bold allerede er hentet
+
+#     while True:
+#         # 1) Find alle koordinater
+#         coords = coord_finder(caught_orange)
+#         if not coords:
+#             print("Ingen koordinater fundet, afslutter loop.")
+#             break
+
+#         cross = coords[0]
+#         robot_pos = coords[1]
+#         orange_ball = coords[3]
+#         white_balls = coords[4]
+
+#         # 2) Konverter til grid‐celler
+#         cross_q  = to_int_cm(cross)
+#         robot_q  = to_int_cm(robot_pos)
+#         white_qs = [to_int_cm(pt) for pt in white_balls]
+#         orange_q = to_int_cm(orange_ball) if orange_ball is not None else None
+
+#         # 3) Byg task‐liste
+#         tasks = []
+#         tasks.append({"name": "cross", "x": cross_q[0], "y": cross_q[1]})
+#         tasks.append({"name": "robot", "x": robot_q[0], "y": robot_q[1]})
+#         if orange_q is not None:
+#             tasks.append({"name": "orange", "x": orange_q[0], "y": orange_q[1]})
+#         white_list = [{"name": "white", "x": x, "y": y} for x, y in white_qs]
+#         tasks.append(white_list)
+
+#         print("Gitter‐koordinater og objekter:", tasks)
+
+#         # 4) Opret EV3‐forbindelse for denne runde
+#         ev3 = EV3Controller(EV3_IP)
+
+#         # 5) Send og modtag ACK
+#         ev3.send(json.dumps({"coords": tasks}))
+#         ack = ev3.recv()
+#         print("EV3 svarede:", ack)
+#         ev3.close()
+
+#         # 6) Opdater state efter orange bold
+#         if not caught_orange and orange_ball is not None:
+#             caught_orange = True
+
+#         # 7) Stop‐betingelse: har vi fanget orange og er der ingen hvide tilbage?
+#         if caught_orange and not white_balls:
+#             print("Alle hvide bolde samlet ind – færdig.")
+#             break
+
+#         # 8) Gentag loopet for næste bold(runde)
+#         #    (evt. lade et kort sleep her, hvis det kører for hurtigt)
+    

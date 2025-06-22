@@ -5,18 +5,18 @@ from .config import BORDER_MARGIN_CELLS, GRID_WIDTH, GRID_HEIGHT, OBSTACLE_HEIGH
 def create_empty_grid():
     return [[0 for _ in range(GRID_WIDTH)] for _ in range(GRID_HEIGHT)]
 
-def add_obstacles(grid,
+def add_obstacles(grid, cross_pos,
                   width=OBSTACLE_WIDTH,
                   height=OBSTACLE_HEIGHT):
 
-    mid_x = GRID_WIDTH  // 2
-    mid_y = GRID_HEIGHT // 2
+    x_center, y_center = cross_pos
 
     half_w = width  // 2
     half_h = height // 2
 
-    x0 = mid_x - half_w
-    y0 = mid_y - half_h
+    # Øverste venstre hjørne af obstacle-boksen:
+    x0 = x_center - half_w
+    y0 = y_center - half_h
 
     for y in range(y0, y0 + height):
         for x in range(x0, x0 + width):
@@ -24,22 +24,22 @@ def add_obstacles(grid,
                 grid[y][x] = 1
     return grid
 
-def inflate_obstacles(grid, margin=OBSTACLE_MARGIN_CELLS):
+# def inflate_obstacles(grid, margin=OBSTACLE_MARGIN_CELLS):
 
-    new_grid = [row[:] for row in grid]
-    for y in range(GRID_HEIGHT):
-        for x in range(GRID_WIDTH):
-            if grid[y][x] == 1:
-                for dy in range(-margin, margin+1):
-                    for dx in range(-margin, margin+1):
-                        ny, nx = y + dy, x + dx
-                        if 0 <= nx < GRID_WIDTH and 0 <= ny < GRID_HEIGHT:
-                            new_grid[ny][nx] = 1
+#     new_grid = [row[:] for row in grid]
+#     for y in range(GRID_HEIGHT):
+#         for x in range(GRID_WIDTH):
+#             if grid[y][x] == 1:
+#                 for dy in range(-margin, margin+1):
+#                     for dx in range(-margin, margin+1):
+#                         ny, nx = y + dy, x + dx
+#                         if 0 <= nx < GRID_WIDTH and 0 <= ny < GRID_HEIGHT:
+#                             new_grid[ny][nx] = 1
 
-    print("Tjek celle (85,60):", grid[60][85])  # skal printe 1
-    print("Tjek celle (99,46):", grid[46][99])  # skal printe 1
+#     print("new_grid Tjek celle (85,60):", new_grid[60][85])  # skal printe 1
+#     print("Tnew_grid tjek celle (99,46):", new_grid[46][99])  # skal printe 1
 
-    return new_grid
+#     return new_grid
 
 def add_border_obstacles(grid, margin_cells=BORDER_MARGIN_CELLS):
 
