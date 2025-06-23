@@ -15,7 +15,8 @@ def to_int_cm(pt):
     return int(round(float(x))), int(round(float(y)))
 
 def main():
-    EV3_IP = "172.20.10.10"
+    EV3_IP = "172.20.10.10" #Jaw
+   # EV3_IP = "172.20.10.3" #Louise
     caught_orange = False  # Husk om den orange bold allerede er hentet
 
     # 1) Find alle koordinater (én gang)

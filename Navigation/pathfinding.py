@@ -82,7 +82,7 @@
 # -*- coding: utf-8 -*-
 
 import heapq
-from .config import GRID_WIDTH, GRID_HEIGHT
+from .config import GRID_WIDTH, GRID_HEIGHT, STOP_DISTANCE_FROM_BALL
 
 def heuristic(a, b):
     # Manhattan‐afstand
@@ -138,3 +138,4 @@ def astar(grid, start, goal):
     
     # Ingen sti fundet
     return None
+

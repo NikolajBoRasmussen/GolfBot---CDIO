@@ -17,7 +17,7 @@ def goalCellChecked(grid, raw_goal):
     # Returnér original, hvis den er fri
     return raw_goal
   
-def     compress_path(path):
+def compress_path(path):
 
     if len(path) < 2:
         return []
@@ -39,7 +39,6 @@ def     compress_path(path):
     runs.append((dx, dy, count))
     return runs
 
-
 def cm_to_grid(coord_cm):
 
     x_cm, y_cm = coord_cm
@@ -50,3 +49,80 @@ def cm_to_grid(coord_cm):
     row = max(0, min(row, GRID_HEIGHT - 1))
     return col, row
 
+
+def extract_entities(tasks):
+
+    cross       = tasks[0]
+    robot_from_pic       = tasks[1]
+    if len(tasks) == 4 and tasks[2]["name"] == "orange":
+        orange = tasks[2]
+        white_list = tasks[3]
+    else:
+        orange     = None
+        white_list = tasks[2]
+    return cross, robot_from_pic, orange, white_list
+
+
+def find_nearest_white(robot, white_list):
+    rx, ry = robot["x"], robot["y"]
+    return min(
+        white_list,
+        key=lambda w: (w["x"]-rx)**2 + (w["y"]-ry)**2
+    )
+
+def select_ball_sequence(robot, orange, white_list, grid):
+
+    def is_free(ball):
+            x, y = ball["x"], ball["y"]
+            if not (0 <= x < GRID_WIDTH and 0 <= y < GRID_HEIGHT):
+                return False
+            return grid[y][x] == 0
+
+    # Find og print hvide bolde, der frasorteres
+    removed_whites = [w for w in white_list if not is_free(w)]
+    for w in removed_whites:
+        print("Filtered out white ball at (x={}, y={})".format(w['x'], w['y']))
+
+    free_whites = [w for w in white_list if is_free(w)]
+
+    if orange:
+        if not is_free(orange):
+            print("Filtered out orange ball at (x={}, y={})".format(orange['x'], orange['y']))
+            orange = None
+    else:
+        orange = None
+
+    if orange:
+        return [orange]
+
+    if not free_whites:
+        return []
+
+    nearest = find_nearest_white(robot, free_whites)
+    return [nearest]
+
+
+
+def print_grid_and_route(grid, path1, path2):
+
+
+    marker = [[None]*GRID_WIDTH for _ in range(GRID_HEIGHT)]
+    for idx, path in enumerate((path1, path2), start=1):
+        if not path:
+            continue
+        for x,y in path:
+            if 0 <= x < GRID_WIDTH and 0 <= y < GRID_HEIGHT:
+                marker[y][x] = str(idx)
+
+    for y in range(GRID_HEIGHT-1, -1, -1):
+        row = []
+        for x in range(GRID_WIDTH):
+            if marker[y][x]:
+                row.append(marker[y][x])
+            elif grid[y][x] == 1:
+                row.append('#')
+            else:
+                row.append('.')
+        print(''.join(row))
+
+    

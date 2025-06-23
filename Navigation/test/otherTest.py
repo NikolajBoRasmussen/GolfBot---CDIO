@@ -4,26 +4,20 @@ import math
 import sys
 import os
 
+from ..helperfunctions import compress_path, print_grid_and_route
+
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from ..gridmap import add_border_obstacles, add_obstacles, create_empty_grid, print_grid
 
-from ..config import GRID_HEIGHT, GRID_WIDTH, SAFEPOINTS
+from ..config import GRID_HEIGHT, GRID_WIDTH, MIN_SEGMENT_CM, SAFEPOINTS, STOP_DISTANCE_FROM_BALL
 
 def build_grid(cross_pos):
     grid = create_empty_grid()
     grid = add_obstacles(grid, cross_pos)
     grid = add_border_obstacles(grid)
     print_grid(grid)
-    
-
-    print("Check (69,46):", grid[46][69])
-    print("Check (84,61):", grid[61][84])
-    print("Check (99,76):", grid[76][99])
-
-    print("Check (68,46):", grid[46][68])
-    print("Check (99,76):", grid[77][99])
     return grid
 
 
@@ -36,7 +30,7 @@ def runflow(tasks):
 
     grid= build_grid((84,61))
     
-    ball_sequence = select_ball_sequence(robot_from_pic, orange, white_list)
+    ball_sequence = select_ball_sequence(robot_from_pic, orange, white_list, grid)
 
     # 3) Eksekver for hver bold
     current_angle = 0.0
@@ -48,12 +42,10 @@ def runflow(tasks):
         )
 
 
-
-
 tasks_with_orange = [
     {"name": "cross",  "x": 85,  "y": 60},
-    {"name": "robot",  "x": 20,  "y": 20},
-    {"name": "orange", "x": 88, "y": 60},
+    {"name": "robot",  "x": 30,  "y": 30},
+    {"name": "orange", "x": 30, "y": 40},
     [
         {"name": "white", "x": 20,  "y": 100},
         {"name": "white", "x": 160, "y": 80},
@@ -73,6 +65,7 @@ def extract_entities(tasks):
     return cross, robot_from_pic, orange, white_list
 
 
+
 def find_nearest_white(robot, white_list):
     rx, ry = robot["x"], robot["y"]
     return min(
@@ -80,21 +73,36 @@ def find_nearest_white(robot, white_list):
         key=lambda w: (w["x"]-rx)**2 + (w["y"]-ry)**2
     )
 
-def select_ball_sequence(robot, orange, white_list):
+def select_ball_sequence(robot, orange, white_list, grid):
 
-    if orange is not None:
-        return [orange]
+    def is_free(ball):
+        x, y = ball["x"], ball["y"]
+        if not (0 <= x < GRID_WIDTH and 0 <= y < GRID_HEIGHT):
+            return False
+        return grid[y][x] == 0
+
+    free_whites = [w for w in white_list if is_free(w)]
+
+    # Tjek orange
+    orange_free = (orange if (orange and is_free(orange)) else None)
+
+    if orange_free:
+        return [orange_free]
     else:
-        return [find_nearest_white(robot, white_list)]
+        if not free_whites:
+            return []
+        return [find_nearest_white(robot, free_whites)]
+    
 
 
 def execute_ball_flow(ball, robot_cell, grid):
 
-    print("VIRKER 5, execute_ball_flow")
     ball_cell = (ball["x"], ball["y"])
-    pathToBall, pathToSafepoint, pathToStart = rute(grid, robot_cell, ball_cell)
+    pathToBall, pathToSafepoint = rute(grid, robot_cell, ball_cell)
+    print_grid_and_route(grid, pathToBall, pathToSafepoint)
     
     return 0.0  
+
 
 def plan_path(grid, start, goal):
     path = astar(grid, start, goal)
@@ -103,43 +111,82 @@ def plan_path(grid, start, goal):
     return path
 
 
+# def rute(grid, robot_cell, ball_cell):
+
+#     print("VIRKER 6, rute")
+#     # Path fra robot til bold
+#     path1 = plan_path(grid, robot_cell, ball_cell)
+
+#     # Find safepoint‐celle ud fra bold‐cellen
+#     sp_cell = nearest_safepoint(ball_cell)
+
+#     # Path fra bold til safepoint
+#     path2 = plan_path(grid, ball_cell, sp_cell)
+
+#     # (valgfri debug-print)
+#     print("robot_cell:", robot_cell, 
+#           "ball_cell:", ball_cell, 
+#           "sp_cell:", sp_cell)
+#     print("plan1:", path1)
+#     print("plan2:", path2)
+
+#     return path1, path2
+
+
 def rute(grid, robot_cell, ball_cell):
+    REQUIRED_CELLS = 15  # 15 cm / 1 cm pr. celle
 
-    print("VIRKER 6, rute")
-    # Path fra robot til bold
-    path1 = plan_path(grid, robot_cell, ball_cell)
+    best_path = None
+    best_dir  = None
 
-    # Find safepoint‐celle ud fra bold‐cellen
+    for dir in [(1,0),(-1,0),(0,1),(0,-1)]:
+        approach = (ball_cell[0] - dir[0]*REQUIRED_CELLS,
+                    ball_cell[1] - dir[1]*REQUIRED_CELLS)
+        # tjek om approach er gyldig:
+        if not (0 <= approach[0] < GRID_WIDTH and 0 <= approach[1] < GRID_HEIGHT): 
+            continue
+        if grid[approach[1]][approach[0]] == 1:
+            continue
+
+        path = astar(grid, robot_cell, approach)
+        if not path:
+            continue
+
+        # ondt: du kunne tjekke segment‐retningen her, men lad os forudsætte A* følger korteste
+        # og at du bare vælger den med mindste total‐længde:
+        if best_path is None or len(path) < len(best_path):
+            best_path = path
+            best_dir  = dir
+
+    if best_path is None:
+        print("ADVARSEL: Ingen sti til en 15 cm offset ved bolden")
+        return None, None
+
+    # byg extra‐segmentet
+    extra = [
+      (best_path[-1][0] + best_dir[0]*i,
+       best_path[-1][1] + best_dir[1]*i)
+      for i in range(1, REQUIRED_CELLS+1)
+    ]
+    full_path = best_path + extra
+
+    # plan2 som før
     sp_cell = nearest_safepoint(ball_cell)
+    path2   = astar(grid, ball_cell, sp_cell)
+    if path2 is None:
+        print("ADVARSEL: Ingen sti fra bold til safepoint")
+        return None, None
 
-    # Path fra bold til safepoint
-    path2 = plan_path(grid, ball_cell, sp_cell)
-
-    # Path fra safepoint tilbage til robot‐start
-    path3 = plan_path(grid, sp_cell, robot_cell)
-
-    # (valgfri debug-print)
-    print("robot_cell:", robot_cell, 
-          "ball_cell:", ball_cell, 
-          "sp_cell:", sp_cell)
-    print("plan1:", path1)
+    print("Rutens sidste segment er nu", REQUIRED_CELLS, "cm langt før 8 cm-stop.")
+    print("plan1:", full_path)
     print("plan2:", path2)
-    print("plan3:", path3)
-
-    return path1, path2, path3
-
-
-
-
+    return full_path, path2
 
 # Liste over dine to safepoints i (col, row)-format
 
 
 def nearest_safepoint(ball_cell, safepoints=SAFEPOINTS):
-    """
-    Returnerer den (col, row) fra safepoints-listen,
-    der er tættest på ball_cell.
-    """
+
     distances = []
     for sp in safepoints:
         dx = sp[0] - ball_cell[0]
@@ -204,4 +251,53 @@ def astar(grid, start, goal):
     # Ingen sti fundet
     return None
 
+
+def check_last_segment(path):
+    """
+    Returnerer antallet af celler i det sidste segment af den komprimerede path.
+    """
+    # compact path til segmenter (dx, dy, count)
+    diffs = [(path[i+1][0] - path[i][0], path[i+1][1] - path[i][1])
+             for i in range(len(path) - 1)]
+    segments = []
+    i = 0
+    while i < len(diffs):
+        dx, dy = diffs[i]
+        cnt = 1
+        i += 1
+        while i < len(diffs) and diffs[i] == (dx, dy):
+            cnt += 1
+            i += 1
+        segments.append((dx, dy, cnt))
+    if not segments:
+        return 0
+    # Antal celler i det sidste segment
+    return segments[-1][2]
+
+#TODO: prøv at teste med STOP_DISTANCE_FROM_BALL+7 eller sådan noget
+def astar_with_min_last_segment(grid, start, goal, min_seg_cells=STOP_DISTANCE_FROM_BALL+7):
+    """
+    Finder en sti hvor sidste segment har mindst min_seg_cells celler.
+    Ellers prøver den buffermål min_seg_cells væk fra goal i fire retninger.
+    """
+    # 1) Prøv direkte
+    path = astar(grid, start, goal)
+    if path and check_last_segment(path) >= min_seg_cells:
+        return path
+
+    gx, gy = goal
+    # 2) Prøv buffermål
+    for dx, dy in [(1,0),(-1,0),(0,1),(0,-1)]:
+        bx = gx - dx * min_seg_cells
+        by = gy - dy * min_seg_cells
+        if not (0 <= bx < GRID_WIDTH and 0 <= by < GRID_HEIGHT):
+            continue
+        if grid[by][bx] == 1:
+            continue
+        buf_path = astar(grid, start, (bx, by))
+        if buf_path and check_last_segment(buf_path) >= min_seg_cells:
+            return buf_path
+
+    # 3) Fald tilbage
+    return path
 runflow(tasks_with_orange)
