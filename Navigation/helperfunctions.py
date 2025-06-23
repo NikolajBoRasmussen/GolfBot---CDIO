@@ -1,6 +1,6 @@
 from .config import GRID_HEIGHT, GRID_SIZE, GRID_WIDTH
 # -*- coding: utf-8 -*-
-
+#helperfunctions.py 
 
 def goalCellChecked(grid, raw_goal):
     x_goal, y_goal = raw_goal

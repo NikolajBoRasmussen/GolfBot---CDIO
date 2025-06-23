@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+#gridmap.py
 from .config import BORDER_MARGIN_CELLS, GRID_WIDTH, GRID_HEIGHT, OBSTACLE_HEIGHT, OBSTACLE_MARGIN_CELLS, OBSTACLE_WIDTH
 
 def create_empty_grid():

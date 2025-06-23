@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+#config.py 
 
 """
 Robotten starter i grid (1,1), mos øst (0 grader)
@@ -21,7 +22,7 @@ AXLE_TRACK = 120 #90 ##mm
 ARM_REACH = 6
 
 # Afstande
-STOP_DISTANCE_FROM_BALL = 12
+STOP_DISTANCE_FROM_BALL = 10
 STOP_DISTANCE_FROM_GOAL = 20
 DELIVERY_ANGLE_TOLERANCE = 5  # grader
 ANGLE_TOLERANCE = 10
