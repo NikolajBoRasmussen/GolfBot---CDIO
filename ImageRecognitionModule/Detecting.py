@@ -4,7 +4,7 @@ import supervision as sv
 import time
 from ImageRecognitionModule.FieldDetector import find_field
 from ImageRecognitionModule.CameraSetup import remove_previous_images, parse_arguments, config_camera
-from ImageRecognitionModule.ObjectGetter import get_objects, get_white_balls
+from ImageRecognitionModule.ObjectSetter import set_objects
 from ImageRecognitionModule.ResizeImage import crop_rotate_warp
 
 def convert_object_to_xy(cross, egg, robot, orange_ball, image_width, image_height):
