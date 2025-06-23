@@ -6,14 +6,13 @@ import unittest
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
 from ImageRecognitionModule.ObjectSetter import set_objects
-from ImageRecognitionModule.ObjectGetter import get_objects, get_white_balls
 
 #Test balls 
 model = YOLO('Models/New Training 1/weights/best.onnx', task = "detect")
 
-class SampleTests(unittest.TestCase):
+class Tests4(unittest.TestCase):
     def setUp(self):
-        test_image_path = os.path.join(os.path.dirname(__file__), "test.jpg")
+        test_image_path = os.path.join(os.path.dirname(__file__), "test4.jpg")
         self.predResult = model.predict(test_image_path) # Predict on a test image
         self.cross, self.egg, self.robot, self.orange_ball, self.white_balls = set_objects(self.predResult)
 
@@ -22,7 +21,7 @@ class SampleTests(unittest.TestCase):
         self.assertGreater(len(self.predResult), 0)
 
     def test_can_find_objects(self):
-        self.assertTrue(self.orange_ball is not None or self.egg is not None or self.white_balls is not None or self.cross is None or self.robot is None)
+        self.assertTrue(self.orange_ball is not None or self.egg is not None or self.white_balls is not None or self.cross is not None or self.robot is None)
 
     def test_can_find_correct_amount(self):
         amount_of_white_balls = 0
@@ -30,14 +29,14 @@ class SampleTests(unittest.TestCase):
             if ball is not None:
                 amount_of_white_balls += 1
 
-        self.assertEqual(amount_of_white_balls, 8)
+        self.assertEqual(amount_of_white_balls, 9)
         
     def test_can_find_correct_amount_of_egg(self):
         amount_of_egg = 0
         for box in self.predResult[0].boxes:
             if box.cls == 1:
                 amount_of_egg += 1
-        self.assertEqual(amount_of_egg, 1)
+        self.assertEqual(amount_of_egg, 0)
     
     def test_can_find_correct_amount_of_cross(self):
         amount_of_cross = 0
@@ -52,27 +51,13 @@ class SampleTests(unittest.TestCase):
             if box.cls == 3:
                 amount_of_robot += 1
         self.assertEqual(amount_of_robot, 0)
-        
+
     def test_can_find_correct_amount_of_orange_ball(self):
         amount_of_orange_ball = 0
         for box in self.predResult[0].boxes:
             if box.cls == 2:
                 amount_of_orange_ball += 1
-        self.assertEqual(amount_of_orange_ball, 1)
-    
+        self.assertEqual(amount_of_orange_ball, 0)
+
     def tearDown(self):
         return super().tearDown()
-
-
-def run_tests():
-    suite = unittest.TestLoader().loadTestsFromTestCase(SampleTests)
-    runner = unittest.TextTestRunner(verbosity=2)
-    result = runner.run(suite)
-
-    if result.wasSuccessful():
-        print("\n✅ All tests passed!")
-    else:
-        print(f"\n❌ Tests failed. Failures: {len(result.failures)}, Errors: {len(result.errors)}")
-
-# Automatically run the tests if the module is imported or executed
-run_tests()
