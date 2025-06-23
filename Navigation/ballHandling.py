@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+#ballhandling.py
 
 import time
 from .config import ANGLE_TOLERANCE, DRIVE_BACK_FROM_BALL, DRIVE_TO_BALL, SAFEPOINT_BIG, SAFEPOINT_SMALL, STOP_DISTANCE_FROM_BALL
@@ -17,21 +18,27 @@ def captureBall(robot, arm_motor, infrared, gyro):
        return True
 
     applied_angle = 0
-    for angle in (ANGLE_TOLERANCE, -2*ANGLE_TOLERANCE, ANGLE_TOLERANCE):
+    for angle in (
+    ANGLE_TOLERANCE,           # +10°
+    ANGLE_TOLERANCE,           # +10° igen
+    -3 * ANGLE_TOLERANCE,      # -30°
+    -1 * ANGLE_TOLERANCE):     # -10°
         turn(robot, angle, gyro)        
         applied_angle += angle         
         time.sleep(2)
         if isBallVeryClose(infrared):
-            # 3) Bold fundet, Vend tilbage til start-retning
-            turn(robot, -applied_angle, gyro)
             play_text("Yes")
             take_arm_down(arm_motor)
+            # 3) Bold fundet, Vend tilbage til start-retning
+            turn(robot, -applied_angle, gyro)
             go_forward_fixedcm(robot, gyro, STOP_DISTANCE_FROM_BALL)
             return True
 
     turn(robot, -applied_angle, gyro)
     go_forward_fixedcm(robot, gyro, STOP_DISTANCE_FROM_BALL)
     return False
+    
+
 
 
 def push_ball_to_goal(robot, arm_motor, gyro, path_to_safepoint, tolerance: float = 1.0, kp: float = 0.8):

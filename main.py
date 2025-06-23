@@ -1,7 +1,5 @@
-# # main.py
-
+## main.py
 import json
-
 from ImageRecognitionModule.CameraSetup import remove_previous_images, parse_arguments, config_camera
 from ImageRecognitionModule.Detecting import coord_finder
 from ev3_controller import EV3Controller
