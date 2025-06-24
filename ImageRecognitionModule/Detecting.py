@@ -43,7 +43,7 @@ def coord_finder(OnlyWhiteBalls):
         coord_finder()
 
     
-    ObjectModel = YOLO("Models/New Training 1/weights/best.onnx", task="detect")  # Load the trained YOLOv8 model
+    ObjectModel = YOLO("Models/FieldModelTraining/weights/best.onnx", task="detect")  # Load the trained YOLOv8 model
     
     box_annotator = sv.BoxAnnotator(
         thickness=2,

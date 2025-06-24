@@ -20,9 +20,12 @@ def main():
     while loopCycle:
         # 1) Find koordinater
         coords = coord_finder(caught_orange)
+        if coords is None and not caught_orange:
+            caught_orange = True
+            coords = coord_finder(caught_orange)
         if not coords:
             print("Ingen koordinater fundet, afslutter.")
-            break
+            coords = coord_finder(caught_orange)
 
         cross      = coords[0]
         robot_pos  = coords[1]
@@ -35,7 +38,10 @@ def main():
         # 3) Konverter til grid-koordinater
         cross_q  = to_int_cm(cross)
         robot_q  = to_int_cm(robot_pos)
-        orange_q = to_int_cm(orange_ball) if orange_ball is not None else None
+        if not caught_orange:
+            orange_q = to_int_cm(orange_ball)
+        else: 
+            orange_q = None
         white_qs = [to_int_cm(w) for w in white_balls]
 
         # 4) Byg task-listen
@@ -64,7 +70,7 @@ def main():
                 print(f"Modtog '{ack}', venter fortsat på 'done'…")
 
         # 6) Opdater state og eventuel exit
-        if orange_ball:
+        if  caught_orange is False:
             caught_orange = True
             orange_ball = None
         if not white_balls:
