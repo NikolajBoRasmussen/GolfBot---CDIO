@@ -37,9 +37,9 @@ def main():
         
         # Draw a blue rectangle (BGR: Blue=(255, 0, 0))
         #Rectangle begin
-        top_left = (50, 37)
+        top_left = (65, 52)
         #rectangle end
-        bottom_right = (590, 442)
+        bottom_right = (575, 427)
         #Rectangle color
         color = (255, 0, 0)  # Blue in BGR
         thickness = 2
