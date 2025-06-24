@@ -1,4 +1,4 @@
-from ObjectGetter import get_objects, get_white_balls
+from ImageRecognitionModule.ObjectGetter import get_objects, get_white_balls
 def set_objects(objects):
     cross = None
     egg = None
