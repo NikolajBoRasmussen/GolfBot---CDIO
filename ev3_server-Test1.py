@@ -1,3 +1,47 @@
+# import socket
+# import json
+# import threading
+# from Navigation.main import runflow
+
+# HOST, PORT = '', 9999
+
+# def start_server():
+#     s = socket.socket()
+#     s.bind((HOST, PORT))
+#     s.listen(1)
+#     print("EV3-server lytter på port", PORT)
+#     while True:
+#         conn, addr = s.accept()
+#         print("Forbindelse fra", addr)
+#         data = conn.recv(8192).decode().strip()
+
+#         # Ignorer tomme beskeder
+#         if not data:
+#             print("Modtaget tom besked – ignorerer.")
+#             conn.close()
+#             continue
+
+#         # Parse JSON
+#         try:
+#             req = json.loads(data)
+#             coords = req["coords"]
+#         except Exception as e:
+#             print("Ugyldigt input fra", addr, ":", repr(data), "(", e, ")")
+#             conn.close()
+#             continue
+
+#         # 1) Send øjeblikkelig ACK og luk forbindelsen
+#         conn.sendall(b"RECEIVED")
+#         conn.close()
+
+#         # 2) Kør runflow i baggrund, så serveren er fri til næste klient
+#         print("Starter asynkront runflow med coords:", coords)
+#         threading.Thread(target=runflow, args=(coords,), daemon=True).start()
+
+# if __name__ == "__main__":
+#     start_server()
+
+
 import socket
 import json
 from Navigation.main import runflow
@@ -14,13 +58,11 @@ def start_server():
         print("Forbindelse fra", addr)
         data = conn.recv(8192).decode().strip()
 
-        # Ignorer tomme beskeder
         if not data:
             print("Modtaget tom besked – ignorerer.")
             conn.close()
             continue
 
-        # Prøv at parse JSON
         try:
             req = json.loads(data)
             coords = req["coords"]
@@ -29,11 +71,14 @@ def start_server():
             conn.close()
             continue
 
-        # Kør dit runflow og send ACK
-        print("Starter runflow med coords:", coords)
+        # Kør runflow synkront – blokér indtil færdig
+        print("Kører runflow med coords:", coords)
         runflow(coords)
+
+        # Når runflow er færdig, send “done” tilbage
         conn.sendall(b"done")
         conn.close()
+        print("Runflow færdig → sendt ACK, klar til næste klient.")
 
 if __name__ == "__main__":
     start_server()

@@ -43,7 +43,6 @@ def turn(robot, angle: float, gyro,
 def forward_cm(robot, dist_cm, speed=200, brake=True):
    
     dist_mm = int(dist_cm * 10)
-    # print("DISTTTTT: ", dist_mm)
     wheel   = EV3EducationSetTire()
     rpm     = speed / wheel.circumference_mm * 60
     robot.on_for_distance(SpeedRPM(rpm),
@@ -69,8 +68,8 @@ def drive_straight(robot, gyro, dist_cm,
     # Omregn til mm
     dist_mm = dist_cm * 10
     # Hvor mange grader motorerne skal dreje samlet set?
-    rotations_needed = dist_mm / WHEEL_CIRCUMFERENCE_MM  # i antal hjul‐omdrejninger
-    degrees_needed   = rotations_needed * 360            # i motor‐grader
+    rotations_needed = dist_mm / WHEEL_CIRCUMFERENCE_MM 
+    degrees_needed   = rotations_needed * 360            
 
     # Reset tacho‐tællere
     robot.left_motor.reset()
@@ -82,7 +81,7 @@ def drive_straight(robot, gyro, dist_cm,
 
     # Kør indtil gennemsnitlig tacho ≥ mål
     while True:
-        left_deg  = abs(robot.left_motor.position)   # i grader
+        left_deg  = abs(robot.left_motor.position)  
         right_deg = abs(robot.right_motor.position)
         avg_deg   = (left_deg + right_deg) / 2
 
