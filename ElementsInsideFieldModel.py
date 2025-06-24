@@ -11,7 +11,7 @@ model.info()     #kan være brugbar til debugging
 
 
 #Train the model
-model.train(data='GolfBot-9/data.yaml', epochs=150, batch=16, project = "Models", name = "New Training 1")
+model.train(data='GolfBot-10/data.yaml', epochs=150, batch=16, project = "Models", name = "FieldModelTraining")
 
 # Evaluation of the model
 results = model.val() # Evaluate the model on the validation set
