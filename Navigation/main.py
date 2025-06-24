@@ -3,7 +3,7 @@
 
 import time
 
-from .helperfunctions import extract_entities, select_ball_sequence
+from .helperfunctions import extract_entities, get_quadrant, get_stop_distance_from_ball, select_ball_sequence
 from .ballHandling import captureBall, push_ball_to_goal
 from .config import (
     AXLE_TRACK,
@@ -59,6 +59,9 @@ def execute_ball_flow(ball, robot_cell, current_angle, robot, arm, gyro, infrare
     if not paths:
         print("Afbrudt: en eller flere ruter er None – ingen eksekvering.")
         return 0.0
+    
+    ball_quad = get_stop_distance_from_ball(ball_cell)
+    
 
     # Håndter både 2-step og 3-step flows
     if len(paths) == 3:

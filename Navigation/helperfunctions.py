@@ -140,7 +140,6 @@ def nearest_safezone(cell):
     )
 
 
-
 def get_quadrant(ball_cel):
 
     x, y = ball_cel
@@ -150,3 +149,9 @@ def get_quadrant(ball_cel):
         if x_min <= x <= x_max and y_min <= y <= y_max:
             return quad
     return None
+
+
+def get_stop_distance_from_ball(ball_cel):
+    quad = get_quadrant(ball_cel)
+    #return  en værdi afhænging af hvilken quad det er
+    return 0

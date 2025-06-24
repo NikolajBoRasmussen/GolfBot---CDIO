@@ -9,6 +9,7 @@ def to_int_cm(pt):
     x, y = pt
     return int(round(float(x))), int(round(float(y)))
 
+
 def main():
     EV3_IP = "172.20.10.3"
     ev3 = EV3Controller(EV3_IP)
@@ -20,12 +21,9 @@ def main():
     while loopCycle:
         # 1) Find koordinater
         coords = coord_finder(caught_orange)
-        if coords is None and not caught_orange:
-            caught_orange = True
-            coords = coord_finder(caught_orange)
         if not coords:
             print("Ingen koordinater fundet, afslutter.")
-            coords = coord_finder(caught_orange)
+            break
 
         cross      = coords[0]
         robot_pos  = coords[1]
@@ -38,10 +36,7 @@ def main():
         # 3) Konverter til grid-koordinater
         cross_q  = to_int_cm(cross)
         robot_q  = to_int_cm(robot_pos)
-        if not caught_orange:
-            orange_q = to_int_cm(orange_ball)
-        else: 
-            orange_q = None
+        orange_q = to_int_cm(orange_ball) if orange_ball is not None else None
         white_qs = [to_int_cm(w) for w in white_balls]
 
         # 4) Byg task-listen
@@ -70,7 +65,7 @@ def main():
                 print(f"Modtog '{ack}', venter fortsat på 'done'…")
 
         # 6) Opdater state og eventuel exit
-        if  caught_orange is False:
+        if orange_ball:
             caught_orange = True
             orange_ball = None
         if not white_balls:
@@ -82,4 +77,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
