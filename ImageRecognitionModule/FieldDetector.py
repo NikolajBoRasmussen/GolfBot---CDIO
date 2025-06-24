@@ -16,15 +16,16 @@ def sort_corners(corners):
     corners = np.array(corners)
     
     if len(corners) > 4:
-        print("5 hjørner")
+        while len(corners) != 4:
+            print("5 hjørner")
         # Compute the centroid of all points.
-        centroid = np.mean(corners, axis=0)
+            centroid = np.mean(corners, axis=0)
         # Calculate the Euclidean distance from each point to the centroid.
-        distances = np.linalg.norm(corners - centroid, axis=1)
+            distances = np.linalg.norm(corners - centroid, axis=1)
         # Identify the index of the most central point.
-        extra_index = np.argmin(distances)
+            extra_index = np.argmin(distances)
         # Remove the extra point.
-        corners = np.delete(corners, extra_index, axis=0)
+            corners = np.delete(corners, extra_index, axis=0)
     
     # Ensure that we have exactly 4 corners at this point.
     if len(corners) != 4:

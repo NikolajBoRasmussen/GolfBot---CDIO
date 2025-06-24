@@ -15,6 +15,8 @@ def plan_path(grid, start, goal):
 
 def execute_path(robot, path, gyro, initial_angle=0.0, apply_early_stop=False):
     current_angle = initial_angle
+    
+    earlyStopPossible = False
 
     segments = compress_path(path)
     for i, (dx, dy, count) in enumerate(segments):
@@ -25,43 +27,14 @@ def execute_path(robot, path, gyro, initial_angle=0.0, apply_early_stop=False):
         current_angle = target_angle
 
         dist = count * GRID_SIZE
-        print("dist før: ", dist)
         if apply_early_stop and i == len(segments) - 1:
-            dist = max(dist - STOP_DISTANCE_FROM_BALL, 0)
-            print("DIST: ", dist)
+            #dist = max(dist - STOP_DISTANCE_FROM_BALL, 0)
+            if dist > STOP_DISTANCE_FROM_BALL:
+                dist = dist - STOP_DISTANCE_FROM_BALL
+                earlyStopPossible = True
         drive_straight(robot, gyro, dist)
         
-    return current_angle
-
-
-# def rute(grid, robot_cell, ball_cell):
-#     # 1) Fra robot til bold
-#     path1 = plan_path(grid, robot_cell, ball_cell)
-#     if path1 is None:
-#         print("ADVARSEL: Ingen sti fra", robot_cell, "til", ball_cell)
-#         return None, None, None
-
-#     # 2) Fra bold til safepoint
-#     sp_cell = nearest_safepoint(ball_cell)
-#     path2 = plan_path(grid, ball_cell, sp_cell)
-#     if path2 is None:
-#         print("ADVARSEL: Ingen sti fra", ball_cell, "til", sp_cell)
-#         return None, None, None
-
-#     # # 3) Fra safepoint tilbage til robot-start
-#     # path3 = plan_path(grid, sp_cell, robot_cell)
-#     # if path3 is None:
-#     #     print("ADVARSEL: Ingen sti fra", sp_cell, "til", robot_cell)
-#     #     return None, None, None
-
-#     # Debug-print af alle tre
-#     print("robot_cell:", robot_cell, "ball_cell:", ball_cell, "sp_cell:", sp_cell)
-#     print("plan1:", path1)
-#     print("plan2:", path2)
-#     #print("plan3:", path3)
-
-#     return path1, path2
-
+    return current_angle, earlyStopPossible
 
 def rute(grid, robot_cell, ball_cell):
 
