@@ -11,7 +11,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from ..gridmap import add_border_obstacles, add_obstacles, create_empty_grid, print_grid
 
-from ..config import GRID_HEIGHT, GRID_WIDTH, MIN_SEGMENT_CM, SAFEPOINTS, STOP_DISTANCE_FROM_BALL
+from ..config import GRID_HEIGHT, GRID_WIDTH, SAFEPOINTS, STOP_DISTANCE_FROM_BALL
 
 def build_grid(cross_pos):
     grid = create_empty_grid()

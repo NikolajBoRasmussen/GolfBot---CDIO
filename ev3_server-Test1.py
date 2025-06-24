@@ -48,37 +48,85 @@ from Navigation.main import runflow
 
 HOST, PORT = '', 9999
 
+# def start_server():
+#     s = socket.socket()
+#     s.bind((HOST, PORT))
+#     s.listen(1)
+#     print("EV3-server lytter på port", PORT)
+#     while True:
+#         conn, addr = s.accept()
+#         print("Forbindelse fra", addr)
+#         data = conn.recv(8192).decode().strip()
+
+#         if not data:
+#             print("Modtaget tom besked – ignorerer.")
+#             conn.close()
+#             continue
+
+#         try:
+#             req = json.loads(data)
+#             coords = req["coords"]
+#         except Exception as e:
+#             print("Ugyldigt input fra", addr, ":", repr(data), "(", e, ")")
+#             conn.close()
+#             continue
+
+#         # Kør runflow synkront – blokér indtil færdig
+#         print("Kører runflow med coords:", coords)
+#         runflow(coords)
+
+#         # Når runflow er færdig, send “done” tilbage
+#         conn.sendall(b"done")
+#         conn.close()
+#         print("Runflow færdig → sendt ACK, klar til næste klient.")
+
+
+
+def handle_client(conn, addr):
+    print("Forbindelse fra", addr)
+    try:
+        while True:
+            data = conn.recv(8192).decode().strip()
+            if not data:
+                print("Klient lukkede forbindelsen.")
+                break
+
+            try:
+                req = json.loads(data)
+                coords = req["coords"]
+            except Exception as e:
+                print("Ugyldigt input:", repr(data), "(", e, ")")
+                # sende fejl-ack her
+                continue
+
+            print("Kører runflow med coords:", coords)
+            runflow(coords)
+            print("coords from pictures: " , coords)
+            conn.sendall(b"done")
+            
+            # try:
+            #     runflow(coords)
+            #     conn.sendall(b"done")
+            # except Exception as e:
+            #     print("runflow fejlede:", e)
+            #     conn.sendall(b"error")
+            print("→ sendt ACK, venter på næste coords…")
+
+    finally:
+        conn.close()
+        print("Lukker forbindelse til", addr)
+
+
 def start_server():
     s = socket.socket()
+    s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     s.bind((HOST, PORT))
     s.listen(1)
     print("EV3-server lytter på port", PORT)
     while True:
         conn, addr = s.accept()
-        print("Forbindelse fra", addr)
-        data = conn.recv(8192).decode().strip()
+        handle_client(conn, addr)
 
-        if not data:
-            print("Modtaget tom besked – ignorerer.")
-            conn.close()
-            continue
-
-        try:
-            req = json.loads(data)
-            coords = req["coords"]
-        except Exception as e:
-            print("Ugyldigt input fra", addr, ":", repr(data), "(", e, ")")
-            conn.close()
-            continue
-
-        # Kør runflow synkront – blokér indtil færdig
-        print("Kører runflow med coords:", coords)
-        runflow(coords)
-
-        # Når runflow er færdig, send “done” tilbage
-        conn.sendall(b"done")
-        conn.close()
-        print("Runflow færdig → sendt ACK, klar til næste klient.")
 
 if __name__ == "__main__":
     start_server()

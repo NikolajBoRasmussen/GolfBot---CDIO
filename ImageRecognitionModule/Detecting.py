@@ -125,6 +125,7 @@ def coord_finder(OnlyWhiteBalls):
             
             objects = ObjectModel.predict("ImageRecognitionModule/Aligned-Field-White.jpg")
             cross, egg, robot, orange_ball, white_balls = set_objects(objects)
+            orange_ball = None
             cap.release()  # Release the video capture
             cv2.destroyAllWindows()  # Close OpenCV windows
             width, height = WhiteImage.shape[1], WhiteImage.shape[0]
@@ -132,7 +133,7 @@ def coord_finder(OnlyWhiteBalls):
             white_balls = convert_white_balls_to_xy(white_balls, width, height)
             print("White Balls:", white_balls) 
             
-            return cross, egg, robot, white_balls
+            return cross, robot, egg, white_balls
         
         #tryk escape for at stoppe programmet
         if(cv2.waitKey(30)==27):

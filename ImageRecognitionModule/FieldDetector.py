@@ -15,7 +15,7 @@ def sort_corners(corners):
     # Convert to NumPy array for vectorized operations
     corners = np.array(corners)
     
-    if len(corners) == 5:
+    if len(corners) > 4:
         print("5 hjørner")
         # Compute the centroid of all points.
         centroid = np.mean(corners, axis=0)

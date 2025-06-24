@@ -3,7 +3,7 @@
 
 import time
 
-from .helperfunctions import extract_entities, print_grid_and_route, select_ball_sequence
+from .helperfunctions import extract_entities, select_ball_sequence
 #from ascii_route_printer import print_full_route
 
 from .ballHandling import captureBall, push_ball_to_goal
@@ -25,6 +25,7 @@ from ev3dev2.motor import (
     LargeMotor,
     OUTPUT_A,
     OUTPUT_B,
+    OUTPUT_D,
     MediumMotor,
     OUTPUT_C,
     MoveDifferential,
@@ -33,11 +34,11 @@ from ev3dev2.wheel import EV3EducationSetTire
 
 
 def setup_motors():
-    left  = LargeMotor(OUTPUT_B)
+    left  = LargeMotor(OUTPUT_D)
     right = LargeMotor(OUTPUT_A)
     arm   = MediumMotor(OUTPUT_C)
     arm.reset()
-    robot = MoveDifferential(OUTPUT_B, OUTPUT_A, EV3EducationSetTire, AXLE_TRACK)
+    robot = MoveDifferential(OUTPUT_D, OUTPUT_A, EV3EducationSetTire, AXLE_TRACK)
     return robot, arm
 
 def setup_sensors():
@@ -54,41 +55,77 @@ def build_grid(cross_pos):
     return grid
 
 
+# def execute_ball_flow(ball, robot_cell, current_angle, robot, arm, gyro, infrared, grid):
+
+
+#     ball_cell = (ball["x"], ball["y"])
+#     pathToBall, pathToSafepoint = rute(grid, robot_cell, ball_cell)
+
+#     print_grid_and_route(grid, pathToBall, pathToSafepoint)
+#     if not pathToBall or not pathToSafepoint:
+#         print("Afbrudt: en eller flere ruter er None – ingen eksekvering.")
+#         return 0.0  
+
+#     print("-> Henter", ball["name"], "på", ball_cell)
+#     current_angle = execute_path(robot, pathToBall, gyro, initial_angle=current_angle, apply_early_stop=True)
+
+#     caught = captureBall(robot, arm, infrared, gyro)
+#     current_angle = gyro.angle
+#     if not caught:
+#         # back_path = list(reversed(pathToBall))
+#         # current_angle = execute_path(robot, back_path, gyro, initial_angle=current_angle)
+#         face_angle(robot, gyro, target_angle=0.0)
+#         return 0.0  
+
+#     # d) Aflever i safepoint
+#     current_angle = execute_path(robot, pathToSafepoint, gyro, initial_angle=current_angle)
+#     push_ball_to_goal(robot, arm, gyro, pathToSafepoint)
+    
+#     #bliver ved safepoint, men roter til vinkel 0
+#     face_angle(robot, gyro, target_angle=0.0)
+    
+#     # current_angle = gyro.angle
+#     # # e) Tilbage til start
+#     # current_angle = execute_path(robot, pathToStart, gyro, initial_angle=current_angle)
+#     # face_angle(robot, gyro, target_angle=0.0)
+   
+#     return 0.0  
+
 def execute_ball_flow(ball, robot_cell, current_angle, robot, arm, gyro, infrared, grid):
-
-
     ball_cell = (ball["x"], ball["y"])
-    pathToBall, pathToSafepoint = rute(grid, robot_cell, ball_cell)
-
-    print_grid_and_route(grid, pathToBall, pathToSafepoint)
-    if not pathToBall or not pathToSafepoint:
+    paths = rute(grid, robot_cell, ball_cell)
+    if not paths:
         print("Afbrudt: en eller flere ruter er None – ingen eksekvering.")
-        return 0.0  
+        return 0.0
 
-    print("-> Henter", ball["name"], "på", ball_cell)
-    current_angle = execute_path(robot, pathToBall, gyro, initial_angle=current_angle, apply_early_stop=True)
+    # Håndter både 2-step og 3-step flows
+    if len(paths) == 3:
+        path_to_safezone, path_to_ball, path_to_safepoint = paths
 
+        # a) Først til intermediate safezone
+        current_angle = execute_path(robot, path_to_safezone, gyro, initial_angle=current_angle)
+
+        # b) Dernæst til bolden
+        current_angle = execute_path(robot, path_to_ball, gyro, initial_angle=current_angle, apply_early_stop=True)
+    else:
+        # Standard: direkte til bold
+        path_to_ball, path_to_safepoint = paths
+        current_angle = execute_path(robot, path_to_ball, gyro, initial_angle=current_angle, apply_early_stop=True)
+
+    # c) Fang bolden
     caught = captureBall(robot, arm, infrared, gyro)
     current_angle = gyro.angle
+    
     if not caught:
-        # back_path = list(reversed(pathToBall))
-        # current_angle = execute_path(robot, back_path, gyro, initial_angle=current_angle)
         face_angle(robot, gyro, target_angle=0.0)
-        return 0.0  
+        return 0.0
 
     # d) Aflever i safepoint
-    current_angle = execute_path(robot, pathToSafepoint, gyro, initial_angle=current_angle)
-    push_ball_to_goal(robot, arm, gyro, pathToSafepoint)
-    
-    #bliver ved safepoint, men roter til vinkel 0
+    current_angle = execute_path(robot, path_to_safepoint, gyro, initial_angle=current_angle)
+    push_ball_to_goal(robot, arm, gyro, path_to_safepoint)
     face_angle(robot, gyro, target_angle=0.0)
-    
-    # current_angle = gyro.angle
-    # # e) Tilbage til start
-    # current_angle = execute_path(robot, pathToStart, gyro, initial_angle=current_angle)
-    # face_angle(robot, gyro, target_angle=0.0)
-   
-    return 0.0  
+
+    return 0.0
 
 def runflow(tasks):
 
