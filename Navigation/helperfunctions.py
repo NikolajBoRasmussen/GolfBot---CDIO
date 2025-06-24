@@ -1,4 +1,4 @@
-from .config import GRID_HEIGHT, GRID_SIZE, GRID_WIDTH
+from .config import GRID_HEIGHT, GRID_SIZE, GRID_WIDTH, MID_REGION_X_MAX, MID_REGION_X_MIN, MID_REGION_Y_MAX, MID_REGION_Y_MIN, SAFEZONES
 # -*- coding: utf-8 -*-
 #helperfunctions.py 
 
@@ -125,4 +125,16 @@ def print_grid_and_route(grid, path1, path2):
                 row.append('.')
         print(''.join(row))
 
+
+
+def is_in_mid_region(cell):
+    x, y = cell
+    return MID_REGION_X_MIN <= x <= MID_REGION_X_MAX and MID_REGION_Y_MIN <= y <= MID_REGION_Y_MAX
     
+
+
+def nearest_safezone(cell):
+    return min(
+        SAFEZONES,
+        key=lambda sz: (cell[0] - sz[0])**2 + (cell[1] - sz[1])**2
+    )
