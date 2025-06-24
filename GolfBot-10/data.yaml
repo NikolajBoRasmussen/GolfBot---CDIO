@@ -1,0 +1,16 @@
+names:
+- cross
+- egg
+- orange_ball
+- robot
+- white_ball
+nc: 5
+roboflow:
+  license: CC BY 4.0
+  project: golfbot-fyxfe
+  url: https://universe.roboflow.com/cdiogolfbot/golfbot-fyxfe/dataset/10
+  version: 10
+  workspace: cdiogolfbot
+test: ../test/images
+train: ../train/images
+val: ../valid/images
