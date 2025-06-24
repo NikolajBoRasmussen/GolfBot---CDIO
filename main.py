@@ -13,7 +13,7 @@ def main():
     EV3_IP = "172.20.10.3"
     ev3 = EV3Controller(EV3_IP)
     ev3.s.settimeout(None)
-    caught_orange = False
+    caught_orange = None
     
     loopCycle = True
 
