@@ -1,4 +1,4 @@
-from .config import GRID_HEIGHT, GRID_SIZE, GRID_WIDTH, MID_REGION_X_MAX, MID_REGION_X_MIN, MID_REGION_Y_MAX, MID_REGION_Y_MIN, SAFEZONES
+from .config import GRID_HEIGHT, GRID_SIZE, GRID_WIDTH, MID_REGION_X_MAX, MID_REGION_X_MIN, MID_REGION_Y_MAX, MID_REGION_Y_MIN, QUADRANT_1, QUADRANT_2, QUADRANT_3, QUADRANT_4, SAFEZONES
 # -*- coding: utf-8 -*-
 #helperfunctions.py 
 
@@ -138,3 +138,15 @@ def nearest_safezone(cell):
         SAFEZONES,
         key=lambda sz: (cell[0] - sz[0])**2 + (cell[1] - sz[1])**2
     )
+
+
+
+def get_quadrant(ball_cel):
+
+    x, y = ball_cel
+
+    for quad in (QUADRANT_1, QUADRANT_2, QUADRANT_3, QUADRANT_4):
+        (x_min, y_min), (x_max, y_max) = quad
+        if x_min <= x <= x_max and y_min <= y <= y_max:
+            return quad
+    return None
