@@ -15,6 +15,21 @@ def sort_corners(corners):
     # Convert to NumPy array for vectorized operations
     corners = np.array(corners)
     
+    if len(corners) == 5:
+        print("5 hjørner")
+        # Compute the centroid of all points.
+        centroid = np.mean(corners, axis=0)
+        # Calculate the Euclidean distance from each point to the centroid.
+        distances = np.linalg.norm(corners - centroid, axis=1)
+        # Identify the index of the most central point.
+        extra_index = np.argmin(distances)
+        # Remove the extra point.
+        corners = np.delete(corners, extra_index, axis=0)
+    
+    # Ensure that we have exactly 4 corners at this point.
+    if len(corners) != 4:
+        raise ValueError(f"Expected 4 corners after removal, got {len(corners)}.")
+
     # Sort by y-coordinate to separate top and bottom
     sorted_by_y = corners[np.argsort(corners[:, 1])]
     

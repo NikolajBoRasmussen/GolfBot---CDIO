@@ -51,8 +51,6 @@ def coord_finder(OnlyWhiteBalls):
         text_scale=1
     )
 
-
-    
     
     crossFound = False
     eggFound = False
