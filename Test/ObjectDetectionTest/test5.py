@@ -8,7 +8,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '.
 from ImageRecognitionModule.ObjectSetter import set_objects
 
 #Test balls 
-model = YOLO('Models/New Training 1/weights/best.onnx', task = "detect")
+model = YOLO('Models/FieldModelTraining/weights/best.onnx', task = "detect")
 
 class Tests5(unittest.TestCase):
     def setUp(self):
@@ -25,9 +25,10 @@ class Tests5(unittest.TestCase):
 
     def test_can_find_correct_amount(self):
         amount_of_white_balls = 0
-        for ball in self.white_balls:
-            if ball is not None:
-                amount_of_white_balls += 1
+        if self.white_balls is not None:
+            for ball in self.white_balls:
+                if ball is not None:
+                    amount_of_white_balls += 1
 
         self.assertEqual(amount_of_white_balls, 0)
         

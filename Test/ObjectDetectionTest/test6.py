@@ -8,7 +8,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '.
 from ImageRecognitionModule.ObjectSetter import set_objects
 
 #Test balls 
-model = YOLO('Models/New Training 1/weights/best.onnx', task = "detect")
+model = YOLO('Models/FieldModelTraining/weights/best.onnx', task = "detect")
 
 class Tests6(unittest.TestCase):
     def setUp(self):
