@@ -10,9 +10,9 @@ from ImageRecognitionModule.ObjectSetter import set_objects
 #Test balls 
 model = YOLO('Models/New Training 1/weights/best.onnx', task = "detect")
 
-class Tests4(unittest.TestCase):
+class Tests6(unittest.TestCase):
     def setUp(self):
-        test_image_path = os.path.join(os.path.dirname(__file__), "test4.jpg")
+        test_image_path = os.path.join(os.path.dirname(__file__), "test6.jpg")
         self.predResult = model.predict(test_image_path) # Predict on a test image
         self.cross, self.egg, self.robot, self.orange_ball, self.white_balls = set_objects(self.predResult)
 
@@ -21,7 +21,7 @@ class Tests4(unittest.TestCase):
         self.assertGreater(len(self.predResult), 0)
 
     def test_can_find_objects(self):
-        self.assertTrue(self.orange_ball is not None or self.egg is not None or self.white_balls is not None or self.cross is not None or self.robot is None)
+        self.assertTrue(self.orange_ball is not None or self.egg is not None or self.white_balls is not None or self.cross is None or self.robot is None)
 
     def test_can_find_correct_amount(self):
         amount_of_white_balls = 0
@@ -29,7 +29,7 @@ class Tests4(unittest.TestCase):
             if ball is not None:
                 amount_of_white_balls += 1
 
-        self.assertEqual(amount_of_white_balls, 9)
+        self.assertEqual(amount_of_white_balls, 8)
         
     def test_can_find_correct_amount_of_egg(self):
         amount_of_egg = 0
@@ -43,7 +43,7 @@ class Tests4(unittest.TestCase):
         for box in self.predResult[0].boxes:
             if box.cls == 0:
                 amount_of_cross += 1
-        self.assertEqual(amount_of_cross, 1)
+        self.assertEqual(amount_of_cross, 0)
     
     def test_can_find_correct_amount_of_robot(self):
         amount_of_robot = 0
