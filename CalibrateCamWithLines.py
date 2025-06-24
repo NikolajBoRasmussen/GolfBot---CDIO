@@ -20,7 +20,7 @@ def main():
     
     #print(cv2.getBuildInformation())
     #nedenstående funktion tænder kameraet i index 1. Indexet starter på 0, men for mig der er kameraet i index 0 mit kamera i min pc.
-    cap = cv2.VideoCapture(1)
+    cap = cv2.VideoCapture(0)
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, frame_width)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, frame_height)
     
@@ -37,9 +37,9 @@ def main():
         
         # Draw a blue rectangle (BGR: Blue=(255, 0, 0))
         #Rectangle begin
-        top_left = (100, 100)
+        top_left = (50, 37)
         #rectangle end
-        bottom_right = (200, 200)
+        bottom_right = (590, 442)
         #Rectangle color
         color = (255, 0, 0)  # Blue in BGR
         thickness = 2
