@@ -14,7 +14,6 @@ def goalCellChecked(grid, raw_goal):
                 print("Warning: standard goal {} is blocked. Adjusted to {}.".format(raw_goal, adjusted))
                 return adjusted
 
-    # Returnér original, hvis den er fri
     return raw_goal
   
 def compress_path(path):

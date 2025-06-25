@@ -2,22 +2,6 @@
 import time
 from ev3dev2.motor import MoveTank, SpeedPercent
 
-# def face_angle(robot, gyro,
-#                target_angle: float,
-#                tolerance: float = 0.1,
-#                kp: float = 0.8):
-#     while True:
-#         current = gyro.angle
-#         error   = target_angle - current
-#         if abs(error) <= tolerance:
-#             robot.off(brake=True)
-#             break
-        
-#         speed = kp * error
-#         speed = max(min(speed, 100), -100)
-#         robot.on(SpeedPercent(speed), SpeedPercent(-speed))
-#         time.sleep(0.01)
-
 def face_angle(robot, gyro,
                    target_angle,
                    tolerance: float = 0.1,

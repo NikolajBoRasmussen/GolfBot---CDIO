@@ -67,17 +67,17 @@ def execute_ball_flow(ball, robot_cell, current_angle, robot, arm, gyro, infrare
     if len(paths) == 3:
         path_to_safezone, path_to_ball, path_to_safepoint = paths
 
-        # a) Først til intermediate safezone
+        #Først til intermediate safezone
         current_angle, _ = execute_path(robot, path_to_safezone, gyro, initial_angle=current_angle)
 
-        # b) Dernæst til bolden
+        #  bolden
         current_angle, earlyStopPossible = execute_path(robot, path_to_ball, gyro, initial_angle=current_angle, apply_early_stop=True)
     else:
         # Standard: direkte til bold
         path_to_ball, path_to_safepoint = paths
         current_angle, earlyStopPossible = execute_path(robot, path_to_ball, gyro, initial_angle=current_angle, apply_early_stop=True)
 
-    # c) Fang bolden
+    #Fang bolden
     caught = captureBall(robot, arm, infrared, gyro, earlyStopPossible)
     current_angle = gyro.angle
     
