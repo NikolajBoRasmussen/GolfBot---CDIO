@@ -11,7 +11,7 @@ def to_int_cm(pt):
 
 
 def main():
-    EV3_IP = "172.20.10.3"
+    EV3_IP = "172.20.10.10"
     ev3 = EV3Controller(EV3_IP)
     ev3.s.settimeout(None)
     caught_orange = False
