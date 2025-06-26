@@ -17,7 +17,7 @@ class EV3Controller:
         self.s.connect((host, port))
 
     def send(self, msg: str):
-        """Sender en streng (f.eks. JSON) til EV3. Tilføjer ikke newline automatisk."""
+        """Sender en streng til EV3."""
         self.s.sendall(msg.encode('utf-8'))
 
     def recv(self, bufsize: int = 1024) -> str:

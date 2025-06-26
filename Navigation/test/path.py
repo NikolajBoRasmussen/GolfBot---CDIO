@@ -21,13 +21,13 @@ def inflate_obstacles(grid, margin=1):
                             new_grid[ny][nx] = 1
     return new_grid
 
-# 1) Byg grid og forhindringer
+# Byg grid og forhindringer
 grid = create_empty_grid()
 grid = add_obstacles(grid)
 grid = inflate_obstacles(grid, margin=1)
 grid = add_border_obstacles(grid)
 
-# 2) Start og mål i gitter-indeks
+# Start og mål i gitter-indeks
 start = (
     int(ROBOT_START_POS[0]),
     int(ROBOT_START_POS[1])
@@ -40,11 +40,10 @@ goal= goalCellChecked(grid, (11, 1))
 # 3) Find sti
 path = astar(grid, start, goal)
 if not path:
-    print("❌ Ingen sti fundet!")
+    print("Ingen sti fundet!")
     exit(1)
 
-# 4) Udskriv resultat
-print("✅ Fundet sti (i gitterceller):", path)
+print("fundet sti (i gitterceller):", path)
 print()
 
 # 5) ASCII-visualisering

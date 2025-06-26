@@ -4,46 +4,68 @@
 import time
 from ev3dev2.motor import SpeedDPS, SpeedRPM
 from ev3dev2.wheel import EV3EducationSetTire
-from ev3dev2.motor import MediumMotor, OUTPUT_C, SpeedPercent
+from ev3dev2.motor import SpeedPercent
 from ev3dev2.motor import SpeedDPS
 from .gyroSensor import face_angle
 
 
 
 def turn(robot, angle: float, gyro,
-         coarse_speed_dps: int = 120,
-         tolerance: float = 0.5,
+         coarse_speed_dps: int = 50,
+         tolerance: float = 0.1,
          kp: float = 0.7):
 
 
     start = gyro.angle
     target = start + angle
 
-    # 2) Grovdrej uden hård bremsning
     robot.turn_degrees(
         SpeedDPS(coarse_speed_dps),
         angle,
-        brake=False,   # coasting mindsker overshoot
+        brake=True,  
         block=True
     )
-
 
     face_angle(robot, gyro,
                target_angle=target,
                tolerance=tolerance,
                kp=kp)
 
+####----------chat------------
+       # 2) Finjustering i loop
+    while True:
+        # Beregn fejl og udfør proportional fin-vending
+        current = gyro.angle
+        error   = target - current
 
-    # 4) Rapportér resultat
+        # Hvis inden for tolerance, stop motorer og bryd loop
+        if abs(error) <= tolerance:
+            robot.off(brake=True)
+            break
+
+        # P-kontroller: hastighed proportional med fejl
+        speed = kp * error
+        speed = max(min(speed, 100), -100)
+
+        # Kør motorerne mod hinanden for at dreje ind
+        robot.on(SpeedPercent(speed), SpeedPercent(-speed))
+        time.sleep(0.01)
+
+        # (valgfrit) print status for debug
+        print("🔄 Korrektion: fejl = {:.2f}° – gyro = {:.2f}°".format(error, current))
+
+####----------chat------------
+
     end = gyro.angle
     actual = end - start
     print("⚙️  Målt rotation: {:.1f}° (mål: {:.1f}°) – Total gyro‐vinkel nu: {:.1f}°"
           .format(actual, angle, end))
     
+
+
 def forward_cm(robot, dist_cm, speed=200, brake=True):
    
     dist_mm = int(dist_cm * 10)
-    # print("DISTTTTT: ", dist_mm)
     wheel   = EV3EducationSetTire()
     rpm     = speed / wheel.circumference_mm * 60
     robot.on_for_distance(SpeedRPM(rpm),
@@ -69,8 +91,8 @@ def drive_straight(robot, gyro, dist_cm,
     # Omregn til mm
     dist_mm = dist_cm * 10
     # Hvor mange grader motorerne skal dreje samlet set?
-    rotations_needed = dist_mm / WHEEL_CIRCUMFERENCE_MM  # i antal hjul‐omdrejninger
-    degrees_needed   = rotations_needed * 360            # i motor‐grader
+    rotations_needed = dist_mm / WHEEL_CIRCUMFERENCE_MM 
+    degrees_needed   = rotations_needed * 360            
 
     # Reset tacho‐tællere
     robot.left_motor.reset()
@@ -82,7 +104,7 @@ def drive_straight(robot, gyro, dist_cm,
 
     # Kør indtil gennemsnitlig tacho ≥ mål
     while True:
-        left_deg  = abs(robot.left_motor.position)   # i grader
+        left_deg  = abs(robot.left_motor.position)  
         right_deg = abs(robot.right_motor.position)
         avg_deg   = (left_deg + right_deg) / 2
 

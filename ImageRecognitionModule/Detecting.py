@@ -4,8 +4,8 @@ import supervision as sv
 import time
 from ImageRecognitionModule.FieldDetector import find_field
 from ImageRecognitionModule.CameraSetup import remove_previous_images, parse_arguments, config_camera
-from ImageRecognitionModule.ObjectSetter import set_objects
 from ImageRecognitionModule.ResizeImage import crop_rotate_warp
+from ImageRecognitionModule.ObjectSetter import set_objects
 
 def convert_object_to_xy(cross, egg, robot, orange_ball, image_width, image_height):
     #Compute scale factors
@@ -15,7 +15,7 @@ def convert_object_to_xy(cross, egg, robot, orange_ball, image_width, image_heig
     #Convert the object coordinates to centimeter
     cross = [(cross[0] * scale_x)+1, (cross[1] * scale_y)-1]
     egg = [(egg[0] * scale_x)+1, (egg[1] * scale_y)-1]
-    robot = [robot[0] * scale_x, robot[1] * scale_y]
+    robot = [(robot[0] * scale_x)+2, (robot[1] * scale_y)+2]
     if(orange_ball is not None):
         #Ensure orange_ball is not None before accessing its elements
         orange_ball = [(orange_ball[0] * scale_x)+1, (orange_ball[1] * scale_y)-1]
@@ -41,8 +41,8 @@ def coord_finder(OnlyWhiteBalls):
     if not cap.isOpened():
         print("Error: Could not open video capture.")
         coord_finder()
-
-    ObjectModel = YOLO("Models/New Training 1/weights/best.onnx", task="detect")  # Load the trained YOLOv8 model
+    
+    ObjectModel = YOLO("Models/FieldModelTraining/weights/best.onnx", task="detect")  # Load the trained YOLOv8 model
     
     box_annotator = sv.BoxAnnotator(
         thickness=2,
@@ -123,6 +123,7 @@ def coord_finder(OnlyWhiteBalls):
             
             objects = ObjectModel.predict("ImageRecognitionModule/Aligned-Field-White.jpg")
             cross, egg, robot, orange_ball, white_balls = set_objects(objects)
+            orange_ball = None
             cap.release()  # Release the video capture
             cv2.destroyAllWindows()  # Close OpenCV windows
             width, height = WhiteImage.shape[1], WhiteImage.shape[0]
@@ -130,7 +131,7 @@ def coord_finder(OnlyWhiteBalls):
             white_balls = convert_white_balls_to_xy(white_balls, width, height)
             print("White Balls:", white_balls) 
             
-            return cross, egg, robot, white_balls
+            return cross, robot, egg, white_balls
         
         #tryk escape for at stoppe programmet
         if(cv2.waitKey(30)==27):

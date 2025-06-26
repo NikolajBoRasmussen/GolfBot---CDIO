@@ -19,68 +19,6 @@
 #     Hvis open-list bliver tom → ingen sti.
 # """
 
-# import math
-# from .config import GRID_WIDTH, GRID_HEIGHT
-
-# class Node:
-#     def __init__(self, x, y, g=0, h=0, parent=None):
-#         self.x, self.y = x, y
-#         self.g = g
-#         self.h = h
-#         self.parent = parent
-
-#     @property
-#     def f(self):
-#         return self.g + self.h
-
-# def heuristic(a, b):
-#     return abs(a.x - b.x) + abs(a.y - b.y)
-
-
-# def astar(grid, start, goal):
-#     open_list = [Node(*start, g=0, h=heuristic(Node(*start), Node(*goal)))]
-#     closed = set()
-
-#     while open_list: #Kør så længe der stadig er noder at undersøge.
-
-#         current = min(open_list, key=lambda o: o.f) #Finder den node i open_list med lavest f = g + h. Den er mest “lovende”.
-
-#         if (current.x, current.y) == goal:
-#             path = []
-
-#             while current:
-#                 path.append((current.x, current.y))
-#                 current = current.parent
-#             return path[::-1]
-
-#         open_list.remove(current)
-#         closed.add((current.x, current.y))
-
-#         for dx, dy in [(1,0),(-1,0),(0,1),(0,-1)]: #Løber gennem de fire mulige retninger (øst, vest, syd, nord).
-#             nx, ny = current.x+dx, current.y+dy
-
-#             if not (0 <= nx < GRID_WIDTH and 0 <= ny < GRID_HEIGHT):
-#                 continue
-#             if grid[ny][nx] == 1 or (nx, ny) in closed:
-#                 continue
-
-#             g_new = current.g + 1
-#             h_new = heuristic(Node(nx, ny), Node(*goal))
-#             neighbor = Node(nx, ny, g=g_new, h=h_new, parent=current)
-
-#             # Søger i open_list efter en eksisterende node med samme koordinat.
-#             # Hvis den eksisterende har lavere eller lig g-værdi, er vores nye sti ikke bedre → drop.
-            
-#             existing = next((o for o in open_list if (o.x,o.y)==(nx,ny)), None)
-#             if existing and neighbor.g >= existing.g:
-#                 continue
-#             open_list.append(neighbor) #Hvis vi ikke droppede, tilføjer vi neighbor til open_list for fremtidig udforskning.
-
-#     return None
-
-# pathfinding.py
-# -*- coding: utf-8 -*-
-
 import heapq
 from .config import GRID_WIDTH, GRID_HEIGHT
 
@@ -90,13 +28,6 @@ def heuristic(a, b):
 
 def astar(grid, start, goal):
     
-    # print("GRID I ASTAR")
-    # for y in range(len(grid)-1, -1, -1):        # udskriv fra top til bund
-    #     row = grid[y]
-    #     line = ''.join('#' if cell else '.' for cell in row)
-    #     print(line)
-
-    # Min‐heap: hvert entry er (f_score, x, y)
     open_heap = []
     # G-scores for hver koord
     g_score = { start: 0 }
@@ -138,3 +69,4 @@ def astar(grid, start, goal):
     
     # Ingen sti fundet
     return None
+

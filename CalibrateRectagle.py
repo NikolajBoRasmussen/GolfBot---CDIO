@@ -24,7 +24,7 @@ def main():
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, frame_width)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, frame_height)
     
-    model = YOLO("Models/Field Training 1/weights/best.onnx")
+    model = YOLO("Models/FieldModelTraining/weights/best.onnx")
     
     box_annotator = sv.BoxAnnotator(
         thickness=2,
@@ -35,18 +35,30 @@ def main():
     while True:
         ret, frame = cap.read()
         
+        # Draw a blue rectangle (BGR: Blue=(255, 0, 0))
+        #Rectangle begin
+        top_left = (50, 37)
+        #rectangle end
+        bottom_right = (590, 442)
+        #Rectangle color
+        color = (255, 0, 0)  # Blue in BGR
+        thickness = 2
+        # Draw the rectangle on the frame
+        cv2.rectangle(frame, top_left, bottom_right, color, thickness)
+        
+        # Inference and annotation
         result = model(frame)[0]
         detection = sv.Detections.from_yolov8(result)
-        frame = box_annotator.annotate(scene = frame, detections = detection)
-        
-        
+        frame = box_annotator.annotate(scene=frame, detections=detection)
+
+        # Show the frame
         cv2.imshow("yolov8", frame)
-        
-        
+
         print(detection)
-        #tryk escape for at stoppe programmet
-        if(cv2.waitKey(30)==27):
+
+        if cv2.waitKey(30) == 27:
             break
+
     
 if __name__ == "__main__":
     main()

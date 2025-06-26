@@ -4,7 +4,7 @@ def set_objects(objects):
     egg = None
     robot = None
     orange_ball = None
-    white_balls = None
+    white_balls = []
 
     for object in objects:
         for box in object.boxes:
@@ -18,7 +18,10 @@ def set_objects(objects):
                 case 1:
                     if egg is not None:
                         if (egg[3] < get_objects(box, 1)[3] and egg[2] < get_objects(box, 1)[2]):
+                            white_balls.append(egg)
                             egg = get_objects(box, 1)
+                        else: 
+                            white_balls.append(get_objects(box, 1))
                     else:
                         egg = get_objects(box, 1)
                 case 2:
