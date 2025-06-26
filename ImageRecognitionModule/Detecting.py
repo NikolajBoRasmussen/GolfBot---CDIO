@@ -8,27 +8,27 @@ from ImageRecognitionModule.ObjectSetter import set_objects
 from ImageRecognitionModule.ResizeImage import crop_rotate_warp
 
 def convert_object_to_xy(cross, egg, robot, orange_ball, image_width, image_height):
-    # Compute scale factors
+    #Compute scale factors
     scale_x = 169 / image_width
     scale_y = 124.5 / image_height
 
-    # Convert the object coordinates to real-world centimeter values
+    #Convert the object coordinates to centimeter
     cross = [(cross[0] * scale_x)+1, (cross[1] * scale_y)-1]
     egg = [(egg[0] * scale_x)+1, (egg[1] * scale_y)-1]
     robot = [robot[0] * scale_x, robot[1] * scale_y]
     if(orange_ball is not None):
-        # Ensure orange_ball is not None before accessing its elements
+        #Ensure orange_ball is not None before accessing its elements
         orange_ball = [(orange_ball[0] * scale_x)+1, (orange_ball[1] * scale_y)-1]
         return cross, egg, robot, orange_ball
     else:
         return cross, egg, robot
 
 def convert_white_balls_to_xy(white_balls, image_width, image_height):
-    # Compute scale factors
+    #Compute scale factors
     scale_x = 169 / image_width
     scale_y = 124.5 / image_height
 
-    # Convert white ball coordinates to real-world centimeter values
+    #Convert white ball coordinates to real-world centimeter values
     white_balls = [[(ball[0] * scale_x)-1, (ball[1] * scale_y)-1] for ball in white_balls]
 
     return white_balls
@@ -42,7 +42,6 @@ def coord_finder(OnlyWhiteBalls):
         print("Error: Could not open video capture.")
         coord_finder()
 
-    
     ObjectModel = YOLO("Models/New Training 1/weights/best.onnx", task="detect")  # Load the trained YOLOv8 model
     
     box_annotator = sv.BoxAnnotator(
@@ -50,9 +49,6 @@ def coord_finder(OnlyWhiteBalls):
        # text_thickness=2,
         text_scale=1
     )
-
-
-    
     
     crossFound = False
     eggFound = False
